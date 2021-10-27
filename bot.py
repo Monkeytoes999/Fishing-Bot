@@ -13,7 +13,7 @@ eqFile = open('equipment.json')
 equipment = json.load(eqFile)
 
 bot = commands.Bot(command_prefix = 'f.', case_insensitive=(True))
-TOKEN = 'REDACTED'
+TOKEN = 'OTAxNDg4Mjg5MDIwODAxMTI0.YXQmZA.MmobOlOkz4YE5t_VYHTeFayixkQ'
 
 @bot.event
 async def on_ready():
@@ -87,6 +87,7 @@ async def satisfaction(r, q, p):
 async def on_command(ctx):
     if not str(ctx.author.id) in users:
         await createUser(ctx.author.id)
+        await ctx.send(f'{ctx.author}, you now have a bot profile.')
 
 @bot.command()
 async def kill(ctx):
@@ -254,15 +255,18 @@ async def store(ctx):
     boats = fishEq.get("boats")
     for i in range(3):
         rod = rods.get(f'{i+1}')
-        store_embed.add_field(name = f'{rod["name"]}', value = f'This rod fishes at {int(rod["quality"])*20} fish per minute and goes for rod["price"] pearles! :oyster:', inline = False)
+        store_embed.add_field(name = f'{rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
     for i in range(3):
         boat = boats.get(f'{i+1}')
-        store_embed.add_field(name = f'{boat["name"]}', value = f'This boat lets you fish for {bot["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
+        store_embed.add_field(name = f'{boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
     store_embed.add_field(name="Seasonings", value="Boosts your food quality by 1 at the price of 200 pearles!")
     store_embed.add_field(name="Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
     await ctx.send(embed = store_embed)
 
-
+@bot.command()
+async def l(ctx, id:int):
+    l = len(users[f'{id}']['inv'])
+    await ctx.send(f'{l}')
 
 @bot.command()
 async def buy(ctx, shoop:str, slot:int):
@@ -289,7 +293,7 @@ async def buy(ctx, shoop:str, slot:int):
     if shoop == 'equipment':
         shoop = shoop
 
-@bot.command(aliases=['pearles', 'perles', 'pearls', 'coins', 'moneys', 'moneyz', 'cash', 'dollars', 'fish blood', 'a'])
+@bot.command(aliases=['pearles', 'perles', 'pearls', 'coins', 'moneys', 'moneyz', 'cash', 'dollars', 'fish blood', 'a', 'mooners'])
 async def money(ctx):
     moneys = users[f'{ctx.author.id}']["money"]
     await ctx.send(f"You currently have {moneys} pearles!")
