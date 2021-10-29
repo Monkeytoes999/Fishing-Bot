@@ -12,8 +12,8 @@ market = json.load(mFile)
 eqFile = open('equipment.json')
 equipment = json.load(eqFile)
 
-bot = commands.Bot(command_prefix = 'f.', case_insensitive=(True))
-TOKEN = 'OTAxNDg4Mjg5MDIwODAxMTI0.YXQmZA.MmobOlOkz4YE5t_VYHTeFayixkQ'
+bot = commands.Bot(command_prefix =['f.', 'fb ', 'F.', 'Fb ', 'FB ', 'fB '], case_insensitive=(True))
+TOKEN = 'REDACTED'
 
 @bot.event
 async def on_ready():
@@ -107,6 +107,8 @@ async def fish(ctx):
         numCaught = math.floor(userInfo["equipment"]["fishEq"]["quality"]*20*userInfo["lastDur"]/60)
         if numCaught == 0:
             numCaught = random.randint(0,1)
+        r = 0
+        q = 0
         for i in range(numCaught):
             fish = await pullFish(userInfo.get("pos"))
             users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
@@ -114,7 +116,12 @@ async def fish(ctx):
             r = fish.get("rarity")
             totVal += await value(r,q,False,0)
         users[f'{ctx.author.id}']["isFishing"] = 0
-        await ctx.send(f'{ctx.author}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:')
+        outMsg = f'{ctx.author}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
+        if numCaught == 0:
+            outMsg = f'{ctx.author}, your line snapped before you could catch any fish! Unlucky!'
+        elif numCaught == 1:
+            outMsg = f'{ctx.author}, you caught a {rarityAr[r]}. It is in {await qualify(q)} condition and worth {totVal} perles! :fishing_pole_and_fish:'
+        await ctx.send(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.send(f'{ctx.author}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
     else: 
