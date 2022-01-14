@@ -5,6 +5,10 @@ import json
 import time
 import math
 
+tfile = open('token.txt','r')
+token = tfile.readline()
+tfile.close()
+
 file = open('users.json',)
 users = json.load(file)
 mFile = open('market.json',)
@@ -13,7 +17,7 @@ eqFile = open('equipment.json')
 equipment = json.load(eqFile)
 
 bot = commands.Bot(command_prefix =['f.', 'fb ', 'F.', 'Fb ', 'FB ', 'fB '], case_insensitive=(True))
-TOKEN = ''
+TOKEN = token
 
 @bot.event
 async def on_ready():
@@ -87,7 +91,7 @@ async def satisfaction(r, q, p):
 async def on_command(ctx):
     if not str(ctx.author.id) in users:
         await createUser(ctx.author.id)
-        await ctx.send(f'{ctx.author}, you now have a bot profile.')
+        await ctx.send(f'{ctx.author[:-5]}, you now have a bot profile.')
 
 @bot.command()
 async def kill(ctx):
@@ -101,7 +105,7 @@ async def fish(ctx):
         users[f'{ctx.author.id}']["isFishing"] = 1
         users[f'{ctx.author.id}']["lastDur"] = userInfo["equipment"]["boat"]["dur"]
         users[f'{ctx.author.id}']["lastCd"] = userInfo["equipment"]["boat"]["cooldown"]
-        await ctx.send(f'{ctx.author}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
+        await ctx.send(f'{ctx.author[:-5]}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
     elif (userInfo["isFishing"] == 1 and (userInfo["lastCd"] >= userInfo["lastFish"] - time.time())):
         totVal = 0
         numCaught = math.floor(userInfo["equipment"]["fishEq"]["quality"]*20*userInfo["lastDur"]/60)
@@ -116,16 +120,16 @@ async def fish(ctx):
             r = fish.get("rarity")
             totVal += await value(r,q,False,0)
         users[f'{ctx.author.id}']["isFishing"] = 0
-        outMsg = f'{ctx.author}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
+        outMsg = f'{ctx.author[:-5]}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
         if numCaught == 0:
-            outMsg = f'{ctx.author}, your line snapped before you could catch any fish! Unlucky!'
+            outMsg = f'{ctx.author[:-5]}, your line snapped before you could catch any fish! Unlucky!'
         elif numCaught == 1:
-            outMsg = f'{ctx.author}, you caught a {rarityAr[r]}. It is in {await qualify(q)} condition and worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.author[:-5]}, you caught a {rarityAr[r]}. It is in {await qualify(q)} condition and worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.send(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
-        await ctx.send(f'{ctx.author}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
+        await ctx.send(f'{ctx.author[:-5]}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
     else: 
-        await ctx.send(f'{ctx.author}, you need to wait {round(userInfo["lastFish"]-time.time())} more seconds before fishing again for conservation reasons!')
+        await ctx.send(f'{ctx.author[:-5]}, you need to wait {round(userInfo["lastFish"]-time.time())} more seconds before fishing again for conservation reasons!')
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile)
 
@@ -148,7 +152,7 @@ async def trade(ctx, slot:int):
             userInfo['inv'][f'{slot}'] = marketFish
             q = marketFish.get("quality")
             r = marketFish.get("rarity")
-            await ctx.send(f'{ctx.author}, your new fish is a {rarityAr[r-1]} and is in {await qualify(q)} condition. It is worth {await value(r,q,True,0)} perles! :fish:')
+            await ctx.send(f'{ctx.author[:-5]}, your new fish is a {rarityAr[r-1]} and is in {await qualify(q)} condition. It is worth {await value(r,q,True,0)} perles! :fish:')
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
             with open('market.json', 'w') as outfile:
@@ -171,7 +175,7 @@ async def prepare(ctx, slot:int):
         p += .4 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
         p += .5 if (users[f'{ctx.author.id}']['equipment'].get('spices') != None) else 0
         users[f'{ctx.author.id}']['inv'][f'{slot}']['prepBonus'] += (p+(skill/100))
-        await ctx.channel.send(f'{ctx.author}, you were able to increase the value of this fish by {round(p+(skill/100),2)} perles! It is now worth {await value(r,q,f,(p+skill/100))} perles! :cook:')
+        await ctx.channel.send(f'{ctx.author[:-5]}, you were able to increase the value of this fish by {round(p+(skill/100),2)} perles! It is now worth {await value(r,q,f,(p+skill/100))} perles! :cook:')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
     else:
@@ -193,7 +197,7 @@ async def inv(ctx):
     num = len(users[f'{ctx.author.id}']['inv'])
     n = 25 if(num > 24) else num
     inv_embed = discord.Embed(
-        title=str(f'{ctx.author}'),
+        title=str(f'{ctx.author[:-5]}'),
         type="rich",
         description=f"You have {num} fish in your inventory. Here are the first {n}"
     )
@@ -218,7 +222,7 @@ async def checkFish(ctx, slot:int):
         f = fish.get("from") != users[f'{ctx.author.id}']["pos"]
         p = fish["prepBonus"]
         prp = " not" if (p == 0) else ""
-        await ctx.channel.send(f'{ctx.author}, This is a {rarityAr[r-1]} that is worth {await value(r,q,f,p)} perles and has{prp} been prepared.')
+        await ctx.channel.send(f'{ctx.author[:-5]}, This is a {rarityAr[r-1]} that is worth {await value(r,q,f,p)} perles and has{prp} been prepared.')
     else:
         await ctx.channel.send('Invalid inventory slot')
 
@@ -233,12 +237,12 @@ async def cook(ctx, slot:int):
         yum = await satisfaction(r,q,p)
         if yum < 3:
             users[f'{ctx.author.id}']['reputation'] -= 3-yum
-            await ctx.channel.send(f'{ctx.author}, your customer hated your fish!')
+            await ctx.channel.send(f'{ctx.author[:-5]}, your customer hated your fish!')
         elif yum > 6:
             users[f'{ctx.author.id}']['reputation'] += yum-6
-            await ctx.channel.send(f'{ctx.author}, your customer liked your fish!')
+            await ctx.channel.send(f'{ctx.author[:-5]}, your customer liked your fish!')
         else:
-            await ctx.channel.send(f'{ctx.author}, your customer thought that your fish was alright')
+            await ctx.channel.send(f'{ctx.author[:-5]}, your customer thought that your fish was alright')
         users[f'{ctx.author.id}']['money'] += await value(r,q,f,p)
         moneys = users[f'{ctx.author.id}']['money']
         i = 0
@@ -250,7 +254,7 @@ async def cook(ctx, slot:int):
                 j += 1
             i += 1
         users[f'{ctx.author.id}']['inv'] = newInv
-        await ctx.channel.send(f'{ctx.author} you have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
+        await ctx.channel.send(f'{ctx.author[:-5]} you have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
     else:
@@ -308,13 +312,13 @@ async def buy(ctx, shoop:str, slot:int):
             userInv = users[f'{ctx.author.id}']['inv'] 
             users[f'{ctx.author.id}']["inv"][f'{len(userInv)}'] = marketFish
             market[f'slot{slot}'] = await pullFish(users[f'{ctx.author.id}']['pos'])
-            await ctx.send(f"{ctx.author} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
+            await ctx.send(f"{ctx.author[:-5]} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
         else:
-            await ctx.send(f"{ctx.author}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
+            await ctx.send(f"{ctx.author[:-5]}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
     if shoop == 'equipment':
         shoop = shoop
 
@@ -343,9 +347,5 @@ async def on_message(message):
                 i += 1
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
-
-
-
-
 
 bot.run(TOKEN)
