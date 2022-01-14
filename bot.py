@@ -348,4 +348,5 @@ async def on_message(message):
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
 
+
 bot.run(TOKEN)
