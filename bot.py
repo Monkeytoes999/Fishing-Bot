@@ -287,7 +287,7 @@ async def mrkt(ctx): #pulls up an embedded that displays market slots and fish
     for i in range(10):
        marketSlot = random.randint(0,99999)
        marketFish = market.get(f"slot{marketSlot}")
-       while (marketFish.get("from") == users.get(ctx.author.id).get("pos") or marketFish.get("from") == -2):
+       while (marketFish.get("from") == users.get(f'{ctx.author.id}').get("pos") or marketFish.get("from") == -2):
            marketSlot = random.randint(0,99999)
            marketFish = market.get(f"slot{marketSlot}")
        prep = "prepared" if (marketFish.get("prepBonus") > 0) else "Not prepared"
