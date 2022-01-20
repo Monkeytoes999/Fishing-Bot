@@ -200,8 +200,10 @@ async def inv(ctx):
     fe = users[f'{ctx.author.id}']['equipment']
     i = 0
     uf = []
+    wf = []
     for i in range(len(fi)-1):
         uf.append(rarityGroups[fi[f'{i}']['rarity']-1])
+        wf.append(fi[f'{i}']['rarity'])
     cf = len([f for f in uf if f == 'common'])
     ctf = len([f for f in uf if f == 'commont'])
     rf = len([f for f in uf if f == 'rare'])
@@ -209,8 +211,16 @@ async def inv(ctx):
     evf = f'\n **{ef}** event fish' if ef > 0 else ''
     bt = (fe['boat']['name']).lower()
     rd = (fe['fishEq']['name']).lower()
-    await ctx.channel.send(f'***WORK IN PROGRESS*** \n \n You currently have: \n **{cf}** common fish \n **{ctf}** common\'t fish \n **{rf}** rare fish{evf} \n \n **Equipment** \n Your fishing boat is a {bt}, and you are fishing with a {rd}!')
-
+    in_embed = discord.Embed(
+        title = str(f'{ctx.author.display_name}\'s Inventory'),
+        type="rich",
+        description=f"Leg Warmers"
+    )
+    in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == 1])}\nPike: {len([f for f in wf if f == 2])}\nGrunt: {len([f for f in wf if f == 3])}")
+    in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == 4])}\nMarlin: {len([f for f in wf if f == 5])}\nTang: {len([f for f in wf if f == 6])}")
+    in_embed.add_field(name=f"Rare Fish: {rf}", value=f"Snapper: {len([f for f in wf if f == 7])}\nTetra: {len([f for f in wf if f == 8])}\nFirefish: {len([f for f in wf if f == 9])}")
+    in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!")
+    await ctx.channel.send(embed=in_embed)
 
 @bot.command()
 async def stock(ctx):
@@ -302,14 +312,18 @@ async def store(ctx):
     fishEq = equipment.get("fishEq")
     rods = fishEq.get("fishRods")
     boats = fishEq.get("boats")
+    j = 1
     for i in range(3):
         rod = rods.get(f'{i+1}')
-        store_embed.add_field(name = f'{rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
+        store_embed.add_field(name = f'{j}: {rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
+        j=j+1    
     for i in range(3):
         boat = boats.get(f'{i+1}')
-        store_embed.add_field(name = f'{boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
-    store_embed.add_field(name="Seasonings", value="Boosts your food quality by 1 at the price of 200 pearles!")
-    store_embed.add_field(name="Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
+        store_embed.add_field(name = f'{j}: {boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
+        j=j+1
+    store_embed.add_field(name=f"{j}: Seasonings", value="Boosts your food quality by 1 at the price of 200 pearles!")
+    j=j+1
+    store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
     await ctx.send(embed = store_embed)
 
 @bot.command()
