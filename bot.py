@@ -223,15 +223,37 @@ async def inv(ctx):
     await ctx.channel.send(embed=in_embed)
 
 @bot.command()
-async def storage(ctx):
+async def storage(ctx, page=1):
     num = len(users[f'{ctx.author.id}']['inv'])
-    n = 25 if(num > 24) else num
-    inv_embed = discord.Embed(
-        title=str(f'{ctx.author.display_name}'),
-        type="rich",
-        description=f"You have {num} fish in your inventory. Here are the first {n}"
-    )
-    i = 0
+    if (page==1 and num >25):
+        n = 1
+        inv_embed = discord.Embed(
+            title=str(f'{ctx.author.display_name}\'s storage | Page 1'),
+            type="rich",
+            description=f"You have {num} fish in your storage. Here are the first 25."
+        )
+    elif (num <= 25):
+        n = 1
+        inv_embed = discord.Embed(
+            title=str(f'{ctx.author.display_name}\'s storage | Page 1'),
+            type="rich",
+            description=f"You have {num} fish in your storage."
+        )
+    elif (num >= page*25):
+        n = 25*(page-1)+1
+        inv_embed = discord.Embed(
+            title=str(f'{ctx.author.display_name}\'s storage | Page {page}'),
+            type="rich",
+            description=f"You have {num} fish in your storage. Here are fish {n}-{n+24}."
+        )
+    else:
+        n = num-25
+        inv_embed = discord.Embed(
+            title=str(f'{ctx.author.display_name}\'s storage | Last page'),
+            type="rich",
+            description=f"You have {num} fish in your storage. Here are fish {n}-{n+24}."
+        )
+    i = n-1
     while (i < len(users[f'{ctx.author.id}']['inv'])):
         fish = users[f'{ctx.author.id}']['inv'][f'{i}']
         q = fish.get("quality")
