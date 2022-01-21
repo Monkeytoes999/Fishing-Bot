@@ -214,7 +214,7 @@ async def inv(ctx):
     in_embed = discord.Embed(
         title = str(f'{ctx.author.display_name}\'s Inventory'),
         type="rich",
-        description=f"f.storage for a more detailed list of fish"
+        description=f"You have {len(fi)} total fish\nf.storage for a more detailed list of fish"
     )
     in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == 1])}\nPike: {len([f for f in wf if f == 2])}\nGrunt: {len([f for f in wf if f == 3])}")
     in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == 4])}\nMarlin: {len([f for f in wf if f == 5])}\nTang: {len([f for f in wf if f == 6])}")
