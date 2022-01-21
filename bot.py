@@ -110,7 +110,7 @@ async def fish(ctx):
         await ctx.send(f'{ctx.author.display_name}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
     elif (userInfo["isFishing"] == 1 and (userInfo["lastCd"] >= userInfo["lastFish"] - time.time())):
         totVal = 0
-        numCaught = round((userInfo["equipment"]["fishEq"]["quality"]^1.51)*random.uniform(.75,1.25)*userInfo["lastDur"])
+        numCaught = round(math.pow(userInfo["equipment"]["fishEq"]["quality"],1.51)*random.uniform(.75,1.25)*userInfo["lastDur"])
         if numCaught == 0:
             numCaught = random.randint(0,1)
         r = 0
