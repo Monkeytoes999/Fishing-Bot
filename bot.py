@@ -110,7 +110,7 @@ async def fish(ctx):
         await ctx.send(f'{ctx.author.display_name}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
     elif (userInfo["isFishing"] == 1 and (userInfo["lastCd"] >= userInfo["lastFish"] - time.time())):
         totVal = 0
-        numCaught = math.floor(userInfo["equipment"]["fishEq"]["quality"]*20*userInfo["lastDur"]/60)
+        numCaught = math.floor(userInfo["equipment"]["fishEq"]["quality"]*48*userInfo["lastDur"]/60)
         if numCaught == 0:
             numCaught = random.randint(0,1)
         r = 0
@@ -247,7 +247,7 @@ async def storage(ctx, page=1):
             description=f"You have {num} fish in your storage. Here are fish {n}-{n+24}."
         )
     else:
-        n = num-25
+        n = num-24
         inv_embed = discord.Embed(
             title=str(f'{ctx.author.display_name}\'s storage | Last page'),
             type="rich",
@@ -328,6 +328,7 @@ async def mrkt(ctx): #pulls up an embedded that displays market slots and fish
     market_embed.set_thumbnail(url="https://i.etsystatic.com/15020412/r/il/455abc/2328156575/il_1588xN.2328156575_4m7l.jpg")
     await ctx.send(embed = market_embed)
 
+eqCost = [500, 2000, 10000, 1000, 5000, 50000, 200, 500]
 @bot.command(aliases = ['shop', 'equipment store', 'equipment shop', 'eq store', 'eq shop'])
 async def store(ctx):
     store_embed = discord.Embed (title = "Jerry's Bait Shop (You know the place)", type = "rich", description = "If you'd like to buy something, type 'f.buy equipment []'")
@@ -376,7 +377,31 @@ async def buy(ctx, shoop:str, slot:int):
         else:
             await ctx.send(f"{ctx.author.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
     if shoop == 'equipment':
-        shoop = shoop
+        if (slot < len(eqCost)):
+            cost = eqCost[slot-1]
+            if (users[f'{ctx.author.id}']["money"] >= cost):
+                if (slot > 6):
+                    await ctx.send('These items have not yet been implemented fully. We apologize')
+                else:
+                    await ctx.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
+                    users[f'{ctx.author.id}']["money"] -= cost
+                    moneys = users[f'{ctx.author.id}']["money"]
+                    userEq = users[f'{ctx.author.id}']['equipment']
+                    fishEq = equipment.get("fishEq")
+                    rods = fishEq.get("fishRods")
+                    boats = fishEq.get("boats")
+                    if (slot > 4):
+                        userEq['boat'] = boats[f'{slot-3}']
+                    else: 
+                        userEq['fishEq'] = rods[f'{slot}']
+                    users[f'{ctx.author.id}']['equipment'] = userEq
+                    await ctx.send(f"{ctx.author.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
+                    with open('users.json', 'w') as outfile:
+                        json.dump(users, outfile)
+            else:
+                await ctx.send(f"{ctx.author.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
+        else:
+            await ctx.send("Invalid equipment slot.")
 
 @bot.command(aliases=['pearles', 'perles', 'pearls', 'coins', 'moneys', 'moneyz', 'cash', 'dollars', 'fish blood', 'a', 'mooners'])
 async def money(ctx):
