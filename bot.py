@@ -377,7 +377,7 @@ async def buy(ctx, shoop:str, slot:int):
         else:
             await ctx.send(f"{ctx.author.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
     if shoop == 'equipment':
-        if (slot < len(eqCost)):
+        if (slot < len(eqCost)+1):
             cost = eqCost[slot-1]
             if (users[f'{ctx.author.id}']["money"] >= cost):
                 if (slot > 6):
@@ -390,7 +390,7 @@ async def buy(ctx, shoop:str, slot:int):
                     fishEq = equipment.get("fishEq")
                     rods = fishEq.get("fishRods")
                     boats = fishEq.get("boats")
-                    if (slot > 4):
+                    if (slot > 3):
                         userEq['boat'] = boats[f'{slot-3}']
                     else: 
                         userEq['fishEq'] = rods[f'{slot}']
