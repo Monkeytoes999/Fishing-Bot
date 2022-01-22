@@ -225,33 +225,33 @@ async def inv(ctx):
 @bot.command()
 async def storage(ctx, page=1):
     num = len(users[f'{ctx.author.id}']['inv'])
-    if (page==1 and num >25):
+    if (page==1 and num >24):
         n = 1
         inv_embed = discord.Embed(
             title=str(f'{ctx.author.display_name}\'s storage | Page 1'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are the first 25."
+            description=f"You have {num} fish in your storage. Here are the first 24."
         )
-    elif (num <= 25):
+    elif (num <= 24):
         n = 1
         inv_embed = discord.Embed(
             title=str(f'{ctx.author.display_name}\'s storage | Page 1'),
             type="rich",
             description=f"You have {num} fish in your storage."
         )
-    elif (num >= page*25):
-        n = 25*(page-1)+1
+    elif (num >= page*24):
+        n = 24*(page-1)+1
         inv_embed = discord.Embed(
             title=str(f'{ctx.author.display_name}\'s storage | Page {page}'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are fish {n}-{n+24}."
+            description=f"You have {num} fish in your storage. Here are fish {n}-{n+23}."
         )
     else:
-        n = num-24
+        n = num-23
         inv_embed = discord.Embed(
             title=str(f'{ctx.author.display_name}\'s storage | Last page'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are fish {n}-{n+24}."
+            description=f"You have {num} fish in your storage. Here are fish {n}-{n+23}."
         )
     i = n-1
     while (i < len(users[f'{ctx.author.id}']['inv'])):
