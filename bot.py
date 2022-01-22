@@ -254,7 +254,7 @@ async def storage(ctx, page=1):
             description=f"You have {num} fish in your storage. Here are fish {n}-{n+23}."
         )
     i = n-1
-    while (i < len(users[f'{ctx.author.id}']['inv'])):
+    while (i < len(users[f'{ctx.author.id}']['inv'] and i < n+23)):
         fish = users[f'{ctx.author.id}']['inv'][f'{i}']
         q = fish.get("quality")
         r = fish.get("rarity")
