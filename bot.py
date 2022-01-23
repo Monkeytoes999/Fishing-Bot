@@ -309,7 +309,7 @@ async def cook(ctx, slot:int):
                 j += 1
             i += 1
         users[f'{ctx.author.id}']['inv'] = newInv
-        await ctx.channel.send(f'{om}/n You have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
+        await ctx.channel.send(f'{om}\n You have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
     else:
