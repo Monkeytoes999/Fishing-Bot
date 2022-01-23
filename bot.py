@@ -55,6 +55,7 @@ async def pullFish(userPos):
 
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish']
 rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare']
+fishnames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish']
 cfArS = [1, 2, 3, 11, 12]
 ufArS = [4, 5, 6, 13, 14]
 rfArS = [7, 8, 9, 15, 16]
@@ -104,15 +105,15 @@ async def on_command(ctx):
 async def kill(ctx):
     await bot.logout()
 
-@bot.command()
-async def fdUdt(ctx):
-    for u in users:    
-        users[u]['fishlog'] = {
-        "bass": 0, "pike": 0, "grunt": 0, "angelfish": 0, "guppy": 0,
-        "cod": 0, "marlin": 0, "tang": 0, "mudfish": 0, "trout": 0,
-        "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
-        "bonefish": 0
-        }
+#@bot.command()
+# async def fdUdt(ctx):
+#     for u in users:    
+#         users[u]['fishlog'] = {
+#         "bass": 0, "pike": 0, "grunt": 0, "angelfish": 0, "guppy": 0,
+#         "cod": 0, "marlin": 0, "tang": 0, "mudfish": 0, "trout": 0,
+#         "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
+#         "bonefish": 0
+#         }
 
 @bot.command()
 async def fish(ctx):
@@ -130,13 +131,15 @@ async def fish(ctx):
             numCaught = random.randint(0,1)
         r = 0
         q = 0
-        fdex = users[f'{ctx.author.id}']
+        fdex = users[f'{ctx.author.id}']['fishlog']
         for i in range(numCaught):
             fish = await pullFish(userInfo.get("pos"))
             users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
             q = fish.get("quality")
             r = fish.get("rarity")
+            fdex[fishnames[r-1]] = fdex[fishnames[r-1]] + 1
             totVal += await value(r,q,False,0)
+        users[f'{ctx.author.id}']['fishlog'] = fdex
         users[f'{ctx.author.id}']["isFishing"] = 0
         outMsg = f'{ctx.author.display_name}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
         if numCaught == 0:
