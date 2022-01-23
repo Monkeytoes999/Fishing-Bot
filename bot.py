@@ -123,9 +123,9 @@ async def fishdex(ctx):
         type="rich",
         description=f"Here are your all time fish counts!"
     )
-    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishnames[cfArS[0]]])}\nPike: {(fdx[fishnames[cfArS[1]]])}\nGrunt: {(fdx[fishnames[cfArS[2]]])}\nAngelfish: {(fdx[fishnames[cfArS[3]]])}\nGuppy: {(fdx[fishnames[cfArS[4]]])}")
-    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishnames[ufArS[0]]])}\nMarlin: {(fdx[fishnames[ufArS[1]]])}\nTang: {(fdx[fishnames[ufArS[2]]])}\nMudfish: {(fdx[fishnames[ufArS[3]]])}\nTrout: {(fdx[fishnames[ufArS[4]]])}")
-    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishnames[rfArS[0]]])}\nTetra: {(fdx[fishnames[rfArS[1]]])}\nFirefish: {(fdx[fishnames[rfArS[2]]])}\nParrotfish: {(fdx[fishnames[rfArS[3]]])}\nCatfish: {(fdx[fishnames[rfArS[4]]])}")
+    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishnames[cfArS[0]-1]])}\nPike: {(fdx[fishnames[cfArS[1]-1]])}\nGrunt: {(fdx[fishnames[cfArS[2]-1]])}\nAngelfish: {(fdx[fishnames[cfArS[3]-1]])}\nGuppy: {(fdx[fishnames[cfArS[4]-1]])}")
+    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishnames[ufArS[0]-1]])}\nMarlin: {(fdx[fishnames[ufArS[1]-1]])}\nTang: {(fdx[fishnames[ufArS[2]-1]])}\nMudfish: {(fdx[fishnames[ufArS[3]-1]])}\nTrout: {(fdx[fishnames[ufArS[4]-1]])}")
+    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishnames[rfArS[0]-1]])}\nTetra: {(fdx[fishnames[rfArS[1]-1]])}\nFirefish: {(fdx[fishnames[rfArS[2]-1]])}\nParrotfish: {(fdx[fishnames[rfArS[3]-1]])}\nCatfish: {(fdx[fishnames[rfArS[4]-1]])}")
     await ctx.channel.send(embed=fd_embed)
 
 @bot.command()
