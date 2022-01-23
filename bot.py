@@ -292,12 +292,12 @@ async def cook(ctx, slot:int):
         yum = await satisfaction(r,q,p)
         if yum < 3:
             users[f'{ctx.author.id}']['reputation'] -= 3-yum
-            await ctx.channel.send(f'{ctx.author.display_name}, your customer hated your fish!')
+            om = f'{ctx.author.display_name}, your customer hated your fish!'
         elif yum > 6:
             users[f'{ctx.author.id}']['reputation'] += yum-6
-            await ctx.channel.send(f'{ctx.author.display_name}, your customer liked your fish!')
+            om = f'{ctx.author.display_name}, your customer liked your fish!'
         else:
-            await ctx.channel.send(f'{ctx.author.display_name}, your customer thought that your fish was alright')
+            om = f'{ctx.author.display_name}, your customer thought that your fish was alright'
         users[f'{ctx.author.id}']['money'] += await value(r,q,f,p)
         moneys = users[f'{ctx.author.id}']['money']
         i = 0
@@ -309,7 +309,7 @@ async def cook(ctx, slot:int):
                 j += 1
             i += 1
         users[f'{ctx.author.id}']['inv'] = newInv
-        await ctx.channel.send(f'{ctx.author.display_name} you have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
+        await ctx.channel.send(f'{om}/n You have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
     else:
