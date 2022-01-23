@@ -31,8 +31,10 @@ async def createUser(userID):
         "pos": len(users),
         "money": 0,
         "fishlog": {
-        "fish0": 0,
-        "fish1": 0
+        "bass": 0, "pike": 0, "grunt": 0, "angelfish": 0, "guppy": 0,
+        "cod": 0, "marlin": 0, "tang": 0, "mudfish": 0, "trout": 0,
+        "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
+        "bonefish": 0
         },
         "equipment": {"fishEq":{"name": "Stick", "quality": 0.1, "price": 0}, "boat":{"name": "raft", "cooldown": 5, "dur": 5, "price": 0}},
         "inv": {},
@@ -118,6 +120,7 @@ async def fish(ctx):
             numCaught = random.randint(0,1)
         r = 0
         q = 0
+        fdex = users[f'{ctx.author.id}']
         for i in range(numCaught):
             fish = await pullFish(userInfo.get("pos"))
             users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
