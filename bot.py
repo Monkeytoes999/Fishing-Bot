@@ -115,6 +115,19 @@ async def kill(ctx):
 #         "bonefish": 0
 #         }
 
+@bot.command(aliases=['fishidex', 'fishlog', 'fish log'])
+async def fishdex(ctx):
+    fdx = users[f'{ctx.author.id}']['fishlog']
+    fd_embed = discord.Embed(
+        title = str(f'{ctx.author.display_name}\'s Fish Log'),
+        type="rich",
+        description=f"Here are your all time fish counts!"
+    )
+    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[cfArS[0]])}\nPike: {(fdx[cfArS[1]])}\nGrunt: {(fdx[cfArS[2]])}\nAngelfish: {(fdx[cfArS[3]])}\nGuppy: {(fdx[cfArS[4]])}")
+    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[ufArS[0]])}\nMarlin: {(fdx[ufArS[1]])}\nTang: {(fdx[ufArS[2]])}\nMudfish: {(fdx[ufArS[3]])}\nTrout: {(fdx[ufArS[4]])}")
+    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[rfArS[0]])}\nTetra: {(fdx[rfArS[1]])}\nFirefish: {(fdx[rfArS[2]])}\nParrotfish: {(fdx[rfArS[3]])}\nCatfish: {(fdx[rfArS[4]])}")
+    await ctx.channel.send(embed=fd_embed)
+
 @bot.command()
 async def fish(ctx):
     userInfo = users.get('{}'.format(ctx.author.id))
