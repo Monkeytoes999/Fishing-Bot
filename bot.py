@@ -195,7 +195,7 @@ async def trade(ctx, slot:int):
             await ctx.channel.send('You can\'t send this fish back!')
 
 @bot.command()
-async def prepare(ctx, slot:int):
+async def prepare(ctx, slot:int=1):
     if (slot>len(users.get(f'{ctx.author.id}').get('inv'))):
         await ctx.channel.send('Invalid inventory slot')
     elif (users[f'{ctx.author.id}']['inv'][f'{slot-1}']['prepBonus'] == 0):
@@ -311,7 +311,7 @@ async def checkFish(ctx, slot:int):
         await ctx.channel.send('Invalid inventory slot')
 
 @bot.command(aliases=['serve'])
-async def cook(ctx, slot:int):
+async def cook(ctx, slot:int=1):
     if (slot <= len(users[f'{ctx.author.id}']['inv'])):
         fish = users[f'{ctx.author.id}']['inv'][f'{slot-1}']
         q = fish['quality']
