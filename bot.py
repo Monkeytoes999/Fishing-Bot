@@ -75,7 +75,14 @@ async def rarity():
         return rfArS[random.randint(0,4)]
 
 async def value(rarity, quality, foreign, prep):
-    rarity = math.ceil(rarity/3)
+    if rarity in cfArS:
+        rarity = 1
+    elif rarity in ufArS:
+        rarity = 2
+    elif rarity in rfArS:
+        rarity = 3
+    else:
+         rarity = 4
     if (foreign):
         return round(3 + rarity*5 + quality*5 + prep) 
     else:
