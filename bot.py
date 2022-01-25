@@ -99,7 +99,14 @@ async def qualify(quality):
         return "bad"
 
 async def satisfaction(r, q, p):
-    r = math.ceil(r/3)
+    if r in cfArS:
+        r = 1
+    elif r in ufArS:
+        r = 2
+    elif r in rfArS:
+        r = 3
+    else:
+        r = 4
     return r+3*q+random.randint(0,2)+p*2
 
 @bot.event
@@ -201,7 +208,7 @@ async def trade(ctx, slot:int):
         else:
             await ctx.channel.send('You can\'t send this fish back!')
 
-@bot.command()
+@bot.command(aliases=['prep'])
 async def prepare(ctx, slot:int=1):
     if (slot>len(users.get(f'{ctx.author.id}').get('inv'))):
         await ctx.channel.send('Invalid inventory slot')
@@ -326,6 +333,7 @@ async def cook(ctx, slot:int=1):
         f = fish['from'] != users[f'{ctx.author.id}']["pos"]
         p = fish['prepBonus']
         yum = await satisfaction(r,q,p)
+        if yum > 12: yum = 12
         if yum < 3:
             users[f'{ctx.author.id}']['reputation'] -= 3-yum
             om = f'{ctx.author.display_name}, your customer hated your fish!'
