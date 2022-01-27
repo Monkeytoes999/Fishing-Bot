@@ -447,7 +447,7 @@ async def buy(ctx, shoop:str, slot:int):
                     rods = fishEq.get("fishRods")
                     boats = fishEq.get("boats")
                     if (slot > 6):
-                        if (slot == 6):
+                        if (slot == 7):
                             userEq['seasoning'] = userEq['seasoning'] + 50
                     elif (slot > 3):
                         userEq['boat'] = boats[f'{slot-3}']
