@@ -113,6 +113,8 @@ async def createProfile(userID):
         'bio': '',
         'fishTime': 0
     }
+    with open('users.json', 'w') as outfile:
+        json.dump(users, outfile)
 
 @bot.event
 async def on_command(ctx):
@@ -150,6 +152,7 @@ async def profile(ctx):
     bioF = ub if(ub != '') else 'No bio set yet!'
     pf_embed.add_field(name="User Bio:", value=bioF)
     pf_embed.add_field(name="Time Spent Fishing:", value=users[f'{ctx.author.id}']['prof']['fishTime'])
+    await ctx.channel.send(embed=pf_embed)    
 
 @bot.command(aliases=['bio', 'biography'])
 async def setBio(ctx):
@@ -166,6 +169,8 @@ async def setBio(ctx):
     else:
         users[f'{ctx.author.id}']['prof']['bio'] = ctx.message.content[preL:]
         await ctx.channel.send("Your bio has been set.")
+    with open('users.json', 'w') as outfile:
+        json.dump(users, outfile)
 
 @bot.command(aliases=['fishidex', 'fishlog', 'fish log'])
 async def fishdex(ctx):
