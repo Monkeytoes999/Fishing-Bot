@@ -138,7 +138,7 @@ async def on_command(ctx):
 
 @bot.command()
 async def profile(ctx):
-    if users[f'{ctx.author.id}']['prof'] == None:
+    if users[f'{ctx.author.id}'].get('prof') == None:
         await createProfile(ctx.author.id)
     pf_embed = discord.Embed(
         title = str(f'{ctx.author.display_name}\'s Profile'),
@@ -153,7 +153,7 @@ async def profile(ctx):
 
 @bot.command(aliases=['bio', 'biography'])
 async def setBio(ctx):
-    if users[f'{ctx.author.id}']['prof'] == None:
+    if users[f'{ctx.author.id}'].get('prof') == None:
         await createProfile(ctx.author.id)
     ms = ctx.message.content.split()
     preL = 0
@@ -190,7 +190,7 @@ async def fish(ctx):
         users[f'{ctx.author.id}']["lastCd"] = userInfo["equipment"]["boat"]["cooldown"]
         await ctx.send(f'{ctx.author.display_name}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
     elif (userInfo["isFishing"] == 1 and (userInfo["lastCd"] >= userInfo["lastFish"] - time.time())):
-        if users[f'{ctx.author.id}']['prof'] == None:
+        if users[f'{ctx.author.id}'].get('prof') == None:
             await createProfile(ctx.author.id)
         users[f'{ctx.author.id}']['prof']['fishTime'] = users[f'{ctx.author.id}']['prof']['fishTime'] + users[f'{ctx.author.id}']["lastDur"]
         totVal = 0
