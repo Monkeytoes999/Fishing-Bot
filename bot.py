@@ -36,7 +36,7 @@ async def createUser(userID):
         "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
         "bonefish": 0
         },
-        "equipment": {"fishEq":{"name": "Stick", "quality": 0.1, "price": 0}, "boat":{"name": "raft", "cooldown": 5, "dur": 5, "price": 0}},
+        "equipment": {"fishEq":{"name": "Stick", "quality": 0.1, "price": 0}, "boat":{"name": "raft", "cooldown": 5, "dur": 5, "price": 0}, "seasoning": 0},
         "inv": {},
         "contacts": {},
         "reputation": 1,
@@ -114,6 +114,8 @@ async def on_command(ctx):
     if not str(ctx.author.id) in users:
         await createUser(ctx.author.id)
         await ctx.send(f'{ctx.author.display_name}, you now have a bot profile.')
+    if not 'seasoning' in users[f'{ctx.author.id}']['equipment']:
+        users[f'{ctx.author.id}']['equipment']['seasoning'] = 0
 
 @bot.command()
 async def kill(ctx):
@@ -220,10 +222,15 @@ async def prepare(ctx, slot:int=1):
         f = fish.get("from") != users[f'{ctx.author.id}']["pos"]
         skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')
         p = .1
-        p += .4 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
-        p += .5 if (users[f'{ctx.author.id}']['equipment'].get('spices') != None) else 0
+        p += 2 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
+        sS = ''
+        if (users[f'{ctx.author.id}']['equipment']['seasoning'] > 0):
+            p += 6
+            sLeft = users[f'{ctx.author.id}']['equipment']['seasoning'] - 1
+            users[f'{ctx.author.id}']['equipment']['seasoning'] = sLeft
+            sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
         users[f'{ctx.author.id}']['inv'][f'{slot}']['prepBonus'] += (p+(skill/100))
-        await ctx.channel.send(f'{ctx.author.display_name}, you were able to increase the value of this fish by {round(p+(skill/100),2)} perles! It is now worth {await value(r,q,f,(p+skill/100))} perles! :cook:')
+        await ctx.channel.send(f'{ctx.author.display_name}, you were able to increase the value of this fish by {round(p+(skill/100),2)} perles! It is now worth {await value(r,q,f,(p+skill/100))} perles! :cook:{sS}')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
     else:
@@ -257,6 +264,8 @@ async def inv(ctx):
     evf = f'\n **{ef}** event fish' if ef > 0 else ''
     bt = (fe['boat']['name']).lower()
     rd = (fe['fishEq']['name']).lower()
+    s = fe['seasoning']
+    sS = f'\nYou have enough seasoning for {s} more servings!' if (s > 0) else ''
     in_embed = discord.Embed(
         title = str(f'{ctx.author.display_name}\'s Inventory'),
         type="rich",
@@ -265,7 +274,7 @@ async def inv(ctx):
     in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == cfArS[0]])}\nPike: {len([f for f in wf if f == cfArS[1]])}\nGrunt: {len([f for f in wf if f == cfArS[2]])}\nAngelfish: {len([f for f in wf if f == cfArS[3]])}\nGuppy: {len([f for f in wf if f == cfArS[4]])}")
     in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == ufArS[0]])}\nMarlin: {len([f for f in wf if f == ufArS[1]])}\nTang: {len([f for f in wf if f == ufArS[2]])}\nMudfish: {len([f for f in wf if f == ufArS[3]])}\nTrout: {len([f for f in wf if f == ufArS[4]])}")
     in_embed.add_field(name=f"Rare Fish: {rf}", value=f"Snapper: {len([f for f in wf if f == rfArS[0]])}\nTetra: {len([f for f in wf if f == rfArS[1]])}\nFirefish: {len([f for f in wf if f == rfArS[2]])}\nParrotfish: {len([f for f in wf if f == rfArS[3]])}\nCatfish: {len([f for f in wf if f == rfArS[4]])}")
-    in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!")
+    in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!{sS}")
     await ctx.channel.send(embed=in_embed)
 
 @bot.command()
@@ -391,7 +400,7 @@ async def store(ctx):
         boat = boats.get(f'{i+1}')
         store_embed.add_field(name = f'{j}: {boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
         j=j+1
-    store_embed.add_field(name=f"{j}: Seasonings", value="Boosts your food quality by 1 at the price of 200 pearles!")
+    store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
     j=j+1
     store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
     await ctx.send(embed = store_embed)
@@ -427,7 +436,7 @@ async def buy(ctx, shoop:str, slot:int):
         if (slot < len(eqCost)+1):
             cost = eqCost[slot-1]
             if (users[f'{ctx.author.id}']["money"] >= cost):
-                if (slot > 6):
+                if (slot > 7):
                     await ctx.send('These items have not yet been implemented fully. We apologize')
                 else:
                     await ctx.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
@@ -437,7 +446,10 @@ async def buy(ctx, shoop:str, slot:int):
                     fishEq = equipment.get("fishEq")
                     rods = fishEq.get("fishRods")
                     boats = fishEq.get("boats")
-                    if (slot > 3):
+                    if (slot > 6):
+                        if (slot == 6):
+                            userEq['seasoning'] = userEq['seasoning'] + 50
+                    elif (slot > 3):
                         userEq['boat'] = boats[f'{slot-3}']
                     else: 
                         userEq['fishEq'] = rods[f'{slot}']
