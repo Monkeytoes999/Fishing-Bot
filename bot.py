@@ -147,11 +147,12 @@ async def profile(ctx):
         type = "rich"
     )
     pf_embed.set_author(name='', icon_url=ctx.author.avatar_url)
-    pf_embed.add_field(name="Reputation:", value=f"You have a reputation score of {round(users[f'{ctx.author.id}']['reputation'])} adding to your prep skill!")
+    pf_embed.add_field(name="Reputation:", value=f"You have a reputation score of {round(users[f'{ctx.author.id}']['reputation'])} adding to your prep skill!", inline=False)
     ub = users[f'{ctx.author.id}']['prof']['bio']
     bioF = ub if(ub != '') else 'No bio set yet!'
-    pf_embed.add_field(name="User Bio:", value=bioF)
-    pf_embed.add_field(name="Time Spent Fishing:", value=users[f'{ctx.author.id}']['prof']['fishTime'])
+    pf_embed.add_field(name="User Bio:", value=bioF, inline=False)
+    fTi = round(users[f'{ctx.author.id}']['prof']['fishTime']/60,2)
+    pf_embed.add_field(name="Time Spent Fishing:", value=f'{fTi} minutes', inline=False)
     await ctx.channel.send(embed=pf_embed)    
 
 @bot.command(aliases=['bio', 'biography'])
@@ -166,6 +167,8 @@ async def setBio(ctx):
         preL = len(ms[0])
     if (len(ctx.message.content) > 1000 + preL):
         await ctx.channel.send("Your bio contents must be less than 1000 characters!")
+    elif(len(ctx.message.content) == preL):
+       await ctx.channel.send("Please include your new bio!") 
     else:
         users[f'{ctx.author.id}']['prof']['bio'] = ctx.message.content[preL:]
         await ctx.channel.send("Your bio has been set.")
