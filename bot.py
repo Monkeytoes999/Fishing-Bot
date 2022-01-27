@@ -146,7 +146,7 @@ async def profile(ctx):
         title = str(f'{ctx.author.display_name}\'s Profile'),
         type = "rich"
     )
-    pf_embed.set_author(name='', icon_url=ctx.author.avatar_url)
+    pf_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
     pf_embed.add_field(name="Reputation:", value=f"You have a reputation score of {round(users[f'{ctx.author.id}']['reputation'])} adding to your prep skill!", inline=False)
     ub = users[f'{ctx.author.id}']['prof']['bio']
     bioF = ub if(ub != '') else 'No bio set yet!'
