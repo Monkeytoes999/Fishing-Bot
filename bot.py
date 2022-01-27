@@ -23,7 +23,6 @@ TOKEN = token
 @bot.event
 async def on_ready():
     print(f'Logged on as {bot.user.name}')
-    channel = bot.get_channel(901489176384507917)
     print (f'Ok {bot.user.name} is online now')
 
 async def createUser(userID):
@@ -109,6 +108,12 @@ async def satisfaction(r, q, p):
         r = 4
     return r+3*q+random.randint(0,2)+p*2
 
+async def createProfile(userID):
+    users[f'{userID}']['prof'] = {
+        'bio': '',
+        'fishTime': 0
+    }
+
 @bot.event
 async def on_command(ctx):
     if not str(ctx.author.id) in users:
@@ -117,9 +122,9 @@ async def on_command(ctx):
     if not 'seasoning' in users[f'{ctx.author.id}']['equipment']:
         users[f'{ctx.author.id}']['equipment']['seasoning'] = 0
 
-@bot.command()
-async def kill(ctx):
-    await bot.logout()
+# @bot.command()
+# async def kill(ctx):
+#     await bot.logout()
 
 #@bot.command()
 # async def fdUdt(ctx):
@@ -130,6 +135,37 @@ async def kill(ctx):
 #         "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
 #         "bonefish": 0
 #         }
+
+@bot.command()
+async def profile(ctx):
+    if users[f'{ctx.author.id}']['prof'] == None:
+        await createProfile(ctx.author.id)
+    pf_embed = discord.Embed(
+        title = str(f'{ctx.author.display_name}\'s Profile'),
+        type = "rich"
+    )
+    pf_embed.set_author(icon_url=ctx.author.avatar_url)
+    pf_embed.add_field(name="Reputation:", value=f"You have a reputation score of {round(users[f'{ctx.author.id}']['reputation'])} adding to your prep skill!")
+    ub = users[f'{ctx.author.id}']['prof']['bio']
+    bioF = ub if(ub != '') else 'No bio set yet!'
+    pf_embed.add_field(name="User Bio:", value=bioF)
+    pf_embed.add_field(name="Time Spent Fishing:", value=users[f'{ctx.author.id}']['prof']['fishTime'])
+
+@bot.command(aliases=['bio', 'biography'])
+async def setBio(ctx):
+    if users[f'{ctx.author.id}']['prof'] == None:
+        await createProfile(ctx.author.id)
+    ms = ctx.message.content.split()
+    preL = 0
+    if (ms[0] == 'fb'):
+        preL = 3 + len(ms[1])
+    else: 
+        preL = len(ms[0])
+    if (len(ctx.message.content) > 1000 + preL):
+        await ctx.channel.send("Your bio contents must be less than 1000 characters!")
+    else:
+        users[f'{ctx.author.id}']['prof']['bio'] = ctx.message.content[preL:]
+        await ctx.channel.send("Your bio has been set.")
 
 @bot.command(aliases=['fishidex', 'fishlog', 'fish log'])
 async def fishdex(ctx):
@@ -154,6 +190,9 @@ async def fish(ctx):
         users[f'{ctx.author.id}']["lastCd"] = userInfo["equipment"]["boat"]["cooldown"]
         await ctx.send(f'{ctx.author.display_name}, your fishing trip has started! Come back in {userInfo["equipment"]["boat"]["dur"]} seconds to see the results!')
     elif (userInfo["isFishing"] == 1 and (userInfo["lastCd"] >= userInfo["lastFish"] - time.time())):
+        if users[f'{ctx.author.id}']['prof'] == None:
+            await createProfile(ctx.author.id)
+        users[f'{ctx.author.id}']['prof']['fishTime'] = users[f'{ctx.author.id}']['prof']['fishTime'] + users[f'{ctx.author.id}']["lastDur"]
         totVal = 0
         numCaught = round(math.pow(userInfo["equipment"]["fishEq"]["quality"],1.151)*random.uniform(.75,1.25)*userInfo["lastDur"])
         if numCaught == 0:
@@ -406,11 +445,6 @@ async def store(ctx):
     await ctx.send(embed = store_embed)
 
 @bot.command()
-async def l(ctx, id:int):
-    l = len(users[f'{id}']['inv'])
-    await ctx.send(f'{l}')
-
-@bot.command()
 async def buy(ctx, shoop:str, slot:int):
     if shoop == 'market':
         marketFish = market.get(f'slot{slot}')
@@ -487,6 +521,5 @@ async def on_message(message):
                 i += 1
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
-
 
 bot.run(TOKEN)
