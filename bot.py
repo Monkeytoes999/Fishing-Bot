@@ -287,7 +287,7 @@ async def prepare(ctx, slot:int=1):
             users[f'{ctx.author.id}']['equipment']['seasoning'] = sLeft
             sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
         users[f'{ctx.author.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
-        nVal = await value(r,q,f,(p+skill/100))
+        nVal = await value(r,q,f,(p+skill))
         await ctx.channel.send(f'{ctx.author.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
