@@ -276,7 +276,7 @@ async def prepare(ctx, slot:int=1):
         else:
             pr = 4
         oVal = await value(r,q,f,0)
-        skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')
+        skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')/100
         if (pr*5 < skill): skill = pr*5
         p = .1
         p += 2 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
@@ -286,7 +286,7 @@ async def prepare(ctx, slot:int=1):
             sLeft = users[f'{ctx.author.id}']['equipment']['seasoning'] - 1
             users[f'{ctx.author.id}']['equipment']['seasoning'] = sLeft
             sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
-        users[f'{ctx.author.id}']['inv'][f'{slot}']['prepBonus'] += (p+(skill/100))
+        users[f'{ctx.author.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
         nVal = await value(r,q,f,(p+skill/100))
         await ctx.channel.send(f'{ctx.author.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
         with open('users.json', 'w') as outfile:
