@@ -82,7 +82,6 @@ async def value(rarity, quality, foreign, prep):
         rarity = 3
     else:
          rarity = 4
-    if (prep > rarity*5): prep = rarity*5
     if (foreign):
         return round(3 + rarity*5 + quality*5 + prep) 
     else:
@@ -268,8 +267,17 @@ async def prepare(ctx, slot:int=1):
         q = fish.get("quality")
         r = fish.get("rarity")
         f = fish.get("from") != users[f'{ctx.author.id}']["pos"]
+        if r in cfArS:
+            pr = 1
+        elif r in ufArS:
+            pr = 2
+        elif r in rfArS:
+            pr = 3
+        else:
+            pr = 4
         oVal = await value(r,q,f,0)
         skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')
+        if (pr*5 < skill): skill = pr*5
         p = .1
         p += 2 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
         sS = ''
