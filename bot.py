@@ -277,7 +277,7 @@ async def prepare(ctx, slot:int=1):
             pr = 4
         oVal = await value(r,q,f,0)
         skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')/100
-        if (pr*5 < skill): skill = pr*5
+        if (3^(pr-1) < skill): skill = 3^(pr-1)
         p = .1
         p += 2 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
         sS = ''
