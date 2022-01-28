@@ -81,7 +81,7 @@ async def value(rarity, quality, foreign, prep):
     elif rarity in rfArS:
         rarity = 3
     else:
-         rarity = 4
+        rarity = 4
     if (foreign):
         return round(3 + rarity*5 + quality*5 + prep) 
     else:
@@ -277,7 +277,7 @@ async def prepare(ctx, slot:int=1):
             pr = 4
         oVal = await value(r,q,f,0)
         skill = users.get(f'{ctx.author.id}').get(f'{"reputation"}')/100
-        if (3^(pr-1) < skill): skill = 3^(pr-1)
+        if (3**(pr-1) < skill): skill = 3**(pr-1)
         p = .1
         p += 2 if (users[f'{ctx.author.id}']['equipment'].get('stove') != None) else 0
         sS = ''
