@@ -207,7 +207,7 @@ posLoc = ['bathtub', 'creek', 'pond-no', 'lake-no', 'ocean']
 async def travel(ctx, loc):
     loc.lower()
     if loc in posLoc:
-        users[f'{ctx.author.id}']['location'] = f'{posLoc.index(loc)}'
+        users[f'{ctx.author.id}']['location'] = f'{posLoc.index(loc)-1}'
         with open('users.json', 'w') as outfile:
             json.dump(users, outfile)
         await ctx.send(f"You are now fishing in {locations[users[f'{ctx.author.id}']['location']]['knAs']}")
