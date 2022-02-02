@@ -72,9 +72,9 @@ async def rarity(userLoc):
     while (res == -1):
         rarity = random.random()
         if (rarity < .75):
-            res =  cfArS[random.randint(0,len(available["cAr"]-1))]
+            res =  cfArS[random.randint(0,len(available["cAr"])-1)]
         elif (rarity < .95):
-            res = ufArS[random.randint(0,len(available["uAr"]-1))]
+            res = ufArS[random.randint(0,len(available["uAr"])-1)]
         elif (available.get("rAr") != NULL):
             res = available["rAr"][random.randint(0,len(available["rAr"])-1)]
     return res
