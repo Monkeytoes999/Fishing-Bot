@@ -16,6 +16,8 @@ mFile = open('market.json',)
 market = json.load(mFile)
 eqFile = open('equipment.json')
 equipment = json.load(eqFile)
+lcFile = open('locations.json')
+locations = json.load(lcFile)
 
 bot = commands.Bot(command_prefix =['f.', 'fb ', 'F.', 'Fb ', 'FB ', 'fB '], case_insensitive=(True))
 TOKEN = token
@@ -47,14 +49,15 @@ async def createUser(userID):
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile) 
            
-async def pullFish(userPos):
-    rr = await rarity()
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0}
+async def pullFish(userPos, userLoc):
+    rr = await rarity(userLoc)
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": 1}
     return fish
 
-rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish']
-rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare']
-fishnames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish']
+rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
+rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare', 'novelty']
+fishNames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish', 'rubber ducky']
+fishWeights = []
 cfArS = [1, 2, 3, 11, 12]
 ufArS = [4, 5, 6, 13, 14]
 rfArS = [7, 8, 9, 15, 16]
@@ -64,7 +67,7 @@ rfArS = [7, 8, 9, 15, 16]
 #async def generateRarities(ctx)
 
 
-async def rarity():
+async def rarity(userLoc):
     rarity = random.random()
     if (rarity < .75):
         return cfArS[random.randint(0,4)]
@@ -123,6 +126,8 @@ async def on_command(ctx):
         await ctx.send(f'{ctx.author.display_name}, you now have a bot profile.')
     if not 'seasoning' in users[f'{ctx.author.id}']['equipment']:
         users[f'{ctx.author.id}']['equipment']['seasoning'] = 0
+    if not 'location' in users[f'{ctx.author.id}']:
+        users[f'{ctx.author.id}']['location'] = '0'
 
 # @bot.command()
 # async def kill(ctx):
@@ -183,10 +188,15 @@ async def fishdex(ctx):
         type="rich",
         description=f"Here are your all time fish counts!"
     )
-    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishnames[cfArS[0]-1]])}\nPike: {(fdx[fishnames[cfArS[1]-1]])}\nGrunt: {(fdx[fishnames[cfArS[2]-1]])}\nAngelfish: {(fdx[fishnames[cfArS[3]-1]])}\nGuppy: {(fdx[fishnames[cfArS[4]-1]])}")
-    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishnames[ufArS[0]-1]])}\nMarlin: {(fdx[fishnames[ufArS[1]-1]])}\nTang: {(fdx[fishnames[ufArS[2]-1]])}\nMudfish: {(fdx[fishnames[ufArS[3]-1]])}\nTrout: {(fdx[fishnames[ufArS[4]-1]])}")
-    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishnames[rfArS[0]-1]])}\nTetra: {(fdx[fishnames[rfArS[1]-1]])}\nFirefish: {(fdx[fishnames[rfArS[2]-1]])}\nParrotfish: {(fdx[fishnames[rfArS[3]-1]])}\nCatfish: {(fdx[fishnames[rfArS[4]-1]])}")
+    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishNames[cfArS[0]-1]])}\nPike: {(fdx[fishNames[cfArS[1]-1]])}\nGrunt: {(fdx[fishNames[cfArS[2]-1]])}\nAngelfish: {(fdx[fishNames[cfArS[3]-1]])}\nGuppy: {(fdx[fishNames[cfArS[4]-1]])}")
+    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishNames[ufArS[0]-1]])}\nMarlin: {(fdx[fishNames[ufArS[1]-1]])}\nTang: {(fdx[fishNames[ufArS[2]-1]])}\nMudfish: {(fdx[fishNames[ufArS[3]-1]])}\nTrout: {(fdx[fishNames[ufArS[4]-1]])}")
+    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishNames[rfArS[0]-1]])}\nTetra: {(fdx[fishNames[rfArS[1]-1]])}\nFirefish: {(fdx[fishNames[rfArS[2]-1]])}\nParrotfish: {(fdx[fishNames[rfArS[3]-1]])}\nCatfish: {(fdx[fishNames[rfArS[4]-1]])}")
     await ctx.channel.send(embed=fd_embed)
+
+@bot.command()
+async def location(ctx):
+    userInfo = users[f'{ctx.author.id}']
+    await ctx.channel.send(f"You are currently fishing in {locations[userInfo['location']]['knAs']}")
 
 @bot.command()
 async def fish(ctx):
@@ -209,19 +219,26 @@ async def fish(ctx):
         q = 0
         fdex = users[f'{ctx.author.id}']['fishlog']
         for i in range(numCaught):
-            fish = await pullFish(userInfo.get("pos"))
-            users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
-            q = fish.get("quality")
-            r = fish.get("rarity")
-            fdex[fishnames[r-1]] = fdex[fishnames[r-1]] + 1
-            totVal += await value(r,q,False,0)
+            if userInfo.get("location") == "-1":
+                r = 17
+                numCaught = 1
+                totVal = 0
+                w = 0.01
+            else: 
+                fish = await pullFish(userInfo.get("pos"), userInfo.get("location"))
+                users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
+                q = fish.get("quality")
+                r = fish.get("rarity")
+                w = fish.get("weight")
+                fdex[fishNames[r-1]] = fdex[fishNames[r-1]] + 1
+                totVal += await value(r,q,False,0)
         users[f'{ctx.author.id}']['fishlog'] = fdex
         users[f'{ctx.author.id}']["isFishing"] = 0
         outMsg = f'{ctx.author.display_name}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
         if numCaught == 0:
             outMsg = f'{ctx.author.display_name}, your line snapped before you could catch any fish! Unlucky!'
         elif numCaught == 1:
-            outMsg = f'{ctx.author.display_name}, you caught a {rarityAr[r-1]}. It is in {await qualify(q)} condition and worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.author.display_name}, you caught a {rarityAr[r-1]}. It weighs {w} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.send(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.send(f'{ctx.author.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')

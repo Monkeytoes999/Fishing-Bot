@@ -1,0 +1,32 @@
+{
+    "-1":{
+        "name": "Bathtub",
+        "knAs": "Your Bathtub",
+        "population": [-1],
+        "wMulti": 0
+    },
+    "0": {
+       "name": "Creek",
+       "knAs": "Vält Creek",
+       "population": [],
+       "wMulti": 0.5
+    },
+    "1": {
+        "name": "Pond",
+        "knAs": "Big Wet Circles",
+        "population": [],
+        "wMulti": 0.8
+    },
+    "2": {
+        "name": "Lake",
+        "knAs": "Your Dead Uncle's House",
+        "population": [],
+        "wMulti": 1.3
+    },
+    "3": {
+        "name": "Ocean",
+        "knAs": "Wets: Large Edition",
+        "population": [],
+        "wMulti": 2
+    }
+}
