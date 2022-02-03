@@ -202,7 +202,7 @@ async def location(ctx):
     userInfo = users[f'{ctx.author.id}']
     await ctx.channel.send(f"You are currently fishing in {locations[userInfo['location']]['knAs']}")
 
-posLoc = ['bathtub', 'creek', 'pond-no', 'lake-no', 'ocean']
+posLoc = ['bathtub', 'creek', 'pond', 'lake', 'ocean']
 @bot.command()
 async def travel(ctx, loc):
     loc.lower()
@@ -212,7 +212,7 @@ async def travel(ctx, loc):
             json.dump(users, outfile)
         await ctx.send(f"You are now fishing in {locations[users[f'{ctx.author.id}']['location']]['knAs']}")
     else:
-        await ctx.send("Invalid location. You can currently travel to the creek and the ocean.")
+        await ctx.send("Invalid location. You can currently travel to the creek, the pond, the lake, and the ocean.")
 
 @bot.command()
 async def fish(ctx):
