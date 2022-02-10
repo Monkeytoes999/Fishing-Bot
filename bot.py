@@ -54,7 +54,7 @@ async def createUser(userID):
            
 async def pullFish(userPos, userLoc):
     rr = await rarity(userLoc)
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(75,140,.01)/100+locations[userLoc]["wMulti"])}
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+locations[userLoc]["wMulti"])}
     return fish
 
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
@@ -351,7 +351,7 @@ async def special(ctx, name, num:int):
         i = 0
         for i in range(num):
             marketSlot = [7541,13501,13938,16595,26773,46262,47663,52353,57710,64896,67709,74790,86063,94945,99082][i]
-            market[f'slot{marketSlot}'] = {"from": -2, "rarity": rarityAr.index(name)+1, "quality": 1, "prepBonus": 0}
+            market[f'slot{marketSlot}'] = {"from": -2, "rarity": rarityAr.index(name)+1, "quality": 1, "prepBonus": 0, "weight": fishWeights[rarityAr.index(name)]}
         await ctx.channel.send(f'Extremely rare {name} have entered the market! There\'s a {num/1000}% chance to catch one!')
         with open('market.json', 'w') as outfile:
             json.dump(market, outfile)
@@ -529,7 +529,7 @@ async def buy(ctx, shoop:str, slot:int):
             moneys = users[f'{ctx.author.id}']["money"]
             userInv = users[f'{ctx.author.id}']['inv'] 
             users[f'{ctx.author.id}']["inv"][f'{len(userInv)}'] = marketFish
-            market[f'slot{slot}'] = await pullFish(users[f'{ctx.author.id}']['pos'])
+            market[f'slot{slot}'] = await pullFish(users[f'{ctx.author.id}']['pos'], users[f'{ctx.author.id}']['location'])
             await ctx.send(f"{ctx.author.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
@@ -572,9 +572,10 @@ async def money(ctx):
     moneys = users[f'{ctx.author.id}']["money"]
     await ctx.send(f"You currently have {moneys} pearles!")
 
-@bot.event
+#@bot.event
 async def on_message(message):
-    if (message.content[0:2]=="--" and message.author.id == "393586279964475393"):
+    if (message.content[0:2]=="--" and message.author.id == 393586279964475393):
+        print("Yes and?")
         if (users.get('{}'.format(message.author.id))==None):
             createUser(message.author.id)
         userInfo = users.get('{}'.format(message.author.id))
@@ -585,13 +586,13 @@ async def on_message(message):
         if (message.content[2:] == 'createMarket'):
             if (True):
                 market = {}
-                message.send("Working...")
+                print("Working...")
             i = 0
             while i < 100000:
-                marketFish = await pullFish(-1)
+                marketFish = await pullFish(-1, "3")
                 market['slot{}'.format(i)] = marketFish
                 i += 1
-            message.send("Done")
+            print("Done")
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
 
