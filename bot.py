@@ -572,9 +572,9 @@ async def money(ctx):
     moneys = users[f'{ctx.author.id}']["money"]
     await ctx.send(f"You currently have {moneys} pearles!")
 
-#@bot.event
+@bot.event
 async def on_message(message):
-    if (message.content[0:2]=="--"):
+    if (message.content[0:2]=="--" and message.author.id == "393586279964475393"):
         if (users.get('{}'.format(message.author.id))==None):
             createUser(message.author.id)
         userInfo = users.get('{}'.format(message.author.id))
@@ -585,11 +585,13 @@ async def on_message(message):
         if (message.content[2:] == 'createMarket'):
             if (True):
                 market = {}
+                message.send("Working...")
             i = 0
             while i < 100000:
                 marketFish = await pullFish(-1)
                 market['slot{}'.format(i)] = marketFish
                 i += 1
+            message.send("Done")
             with open('market.json', 'w') as outfile:
                 json.dump(market, outfile)
 
