@@ -241,7 +241,7 @@ async def fish(ctx):
             await createProfile(ctx.author.id)
         users[f'{ctx.author.id}']['prof']['fishTime'] = users[f'{ctx.author.id}']['prof']['fishTime'] + users[f'{ctx.author.id}']["lastDur"]
         totVal = 0
-        numCaught = round(1.2*userInfo["lastDur"])
+        numCaught = round(1.2/60*userInfo["lastDur"])
         if numCaught == 0:
             numCaught = random.randint(0,1)
         r = 0
