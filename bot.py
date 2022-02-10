@@ -215,6 +215,18 @@ async def travel(ctx, loc):
         await ctx.send("Invalid location. You can currently travel to the creek, the pond, the lake, and the ocean.")
 
 @bot.command()
+async def gif(ctx):
+    g =  random.randint(1,3)
+    if g == 1:
+        await ctx.channel.send(file=discord.File('Fish-I.gif'))
+    elif g == 2:
+        await ctx.channel.send("*Crispy*", file=discord.File('Fish-B.gif'))
+    else:
+        await ctx.channel.send(file=discord.File('Fish-N.gif'))
+
+
+
+@bot.command()
 async def fish(ctx):
     userInfo = users.get('{}'.format(ctx.author.id))
     if (userInfo["isFishing"] == 0 and (userInfo["lastFish"] - time.time() < 0)):
