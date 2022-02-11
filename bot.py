@@ -227,7 +227,7 @@ async def license(ctx):
     uLic = userInfo["license"]
     uFTot = 0
     for type in userInfo["fishlog"]:
-        uFTot = uFTot + type
+        uFTot = uFTot + userInfo["fishlog"][type]
     nxL = 'You currently have the highest level license available!'
     if uLic < 2:
         fLCount = [50, 1000]
@@ -606,7 +606,7 @@ async def buy(ctx, shoop:str, slot:int):
         uLic = userInfo["license"]
         uFTot = 0
         for type in userInfo["fishlog"]:
-            uFTot = uFTot + type
+            uFTot = uFTot + userInfo["fishlog"][type]
         nxL = 'You currently have the highest level license available!'
         if uLic < 2:
             fLCount = [50, 1000]
