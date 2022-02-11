@@ -299,7 +299,7 @@ async def fish(ctx):
         users[f'{ctx.author.id}']['fishlog'] = fdex
         users[f'{ctx.author.id}']["isFishing"] = 0
         outMsg = f'{ctx.author.display_name},{released} your fishing trip yielded {numCaught} fish{snapped} Their total value is {totVal} perles! :fishing_pole_and_fish:'
-        if numCaught == 0:
+        if numCaught <= 0:
             if (rCount == 0):
                 outMsg = f'{ctx.author.display_name}, your line snapped before you could catch any fish! Unlucky!'
             else:
