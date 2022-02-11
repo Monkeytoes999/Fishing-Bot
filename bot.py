@@ -1,5 +1,7 @@
 from asyncio import base_tasks
 from asyncio.windows_events import NULL
+from platform import release
+from re import U
 import discord
 from discord.ext import tasks, commands
 import random
@@ -19,6 +21,8 @@ eqFile = open('equipment.json')
 equipment = json.load(eqFile)
 lcFile = open('locations.json')
 locations = json.load(lcFile)
+ldbFile = open('leaderboards.json')
+leaderboards = json.load(ldbFile)
 
 bot = commands.Bot(command_prefix =['f.', 'fb ', 'F.', 'Fb ', 'FB ', 'fB '], case_insensitive=(True))
 TOKEN = token
@@ -217,6 +221,20 @@ async def travel(ctx, loc):
     else:
         await ctx.send("Invalid location. The currently travel options are: the creek, the pond, the lake, and the ocean.")
 
+@bot.command(aliases=["lisence"])
+async def license(ctx):
+    userInfo = users[f'{ctx.author.id}']
+    uLic = userInfo["license"]
+    uFTot = 0
+    for type in userInfo["fishlog"]:
+        uFTot = uFTot + type
+    nxL = 'You currently have the highest level license available!'
+    if uLic < 2:
+        fLCount = [50, 1000]
+        fLPrice = [100, 5000]
+        nxL = f"You need to catch a total of {fLCount[uLic]} fish and pay a fee of {fLPrice[uLic]} perles to upgrade your license. If you are ready to upgrade your license, run \"fb buy license\""
+    await ctx.send(f"You currently have a class {uLic} license, and have caught a total of {uFTot} fish. {nxL}")
+
 @bot.command()
 async def gif(ctx):
     g =  random.randint(1,3)
@@ -247,6 +265,8 @@ async def fish(ctx):
         r = 0
         q = 0
         snapped = '!'
+        released = ''
+        rCount = 0
         fdex = users[f'{ctx.author.id}']['fishlog']
         for i in range(numCaught):
             if userInfo.get("location") == "-1":
@@ -256,23 +276,36 @@ async def fish(ctx):
                 w = 0.01
             else:
                 fish = await pullFish(userInfo.get("pos"), userInfo.get("location"))
-                if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"]):
-                    users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
+                if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"] and fish.get("weight") > fishWeights[fish.get("rarity")-1]*.85):
                     q = fish.get("quality")
                     r = fish.get("rarity")
                     w = fish.get("weight")
+                    if leaderboards[f"{fishNames[r-1]}"]["weight"] < w:
+                        moneys = users[f'{ctx.author.id}']['money']
+                        bonus = 10
+                        users[f'{ctx.author.id}']['money'] = moneys + bonus
+                        leaderboards[f"{fishNames[r-1]}"] = fish
+                        await ctx.send(f'{ctx.author.display_name}, you have found the biggest {fishNames[r-1]} yet! The Siltora Club has rewarded you a 10 perle prize, and you have recieved a place on the leaderboard!')
+                    users[f'{ctx.author.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
                     fdex[fishNames[r-1]] = fdex[fishNames[r-1]] + 1
                     totVal += await value(r,q,False,0)
+                elif (fish.get("weight") <= fishWeights[fish.get("rarity")-1]*.85):
+                    rCount = rCount + 1
+                    released = f" you had to release {rCount} young fish, but"
+                    numCaught = i-1
                 else:
                     snapped = ' before your line snapped.'
                     numCaught = i-1
         users[f'{ctx.author.id}']['fishlog'] = fdex
         users[f'{ctx.author.id}']["isFishing"] = 0
-        outMsg = f'{ctx.author.display_name}, your fishing trip yielded {numCaught} fish{snapped} Their total value is {totVal} perles! :fishing_pole_and_fish:'
+        outMsg = f'{ctx.author.display_name},{released} your fishing trip yielded {numCaught} fish{snapped} Their total value is {totVal} perles! :fishing_pole_and_fish:'
         if numCaught == 0:
-            outMsg = f'{ctx.author.display_name}, your line snapped before you could catch any fish! Unlucky!'
+            if (rCount == 0):
+                outMsg = f'{ctx.author.display_name}, your line snapped before you could catch any fish! Unlucky!'
+            else:
+                outMsg = 'You had to release all of the fish you caught because they were too young. Unlucky!' 
         elif numCaught == 1:
-            outMsg = f'{ctx.author.display_name}, you caught a {rarityAr[r-1]}{snapped} It weighs {w} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.author.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {w} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.send(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.send(f'{ctx.author.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
@@ -280,6 +313,8 @@ async def fish(ctx):
         await ctx.send(f'{ctx.author.display_name}, you need to wait {round(userInfo["lastFish"]-time.time())} more seconds before fishing again for conservation reasons!')
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile)
+    with open('leaderboards.json', 'w') as outfile:
+        json.dump(leaderboards, outfile)
 
 @bot.command()
 async def trade(ctx, slot:int):
@@ -566,6 +601,30 @@ async def buy(ctx, shoop:str, slot:int):
                 await ctx.send(f"{ctx.author.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
         else:
             await ctx.send("Invalid equipment slot.")
+    if shoop == 'license' or shoop == 'lisence':
+        userInfo = users[f'{ctx.author.id}']
+        uLic = userInfo["license"]
+        uFTot = 0
+        for type in userInfo["fishlog"]:
+            uFTot = uFTot + type
+        nxL = 'You currently have the highest level license available!'
+        if uLic < 2:
+            fLCount = [50, 1000]
+            fLPrice = [100, 5000]
+            if uFTot >= fLCount[uLic]:
+                if userInfo["money"] >= fLPrice[uLic]:
+                    moneys = users[f'{ctx.author.id}']["money"]
+                    users[f'{ctx.author.id}']['license'] = uLic+1
+                    users[f'{ctx.author.id}']['money'] = moneys - fLPrice[uLic]
+                    await ctx.send(f"{ctx.author.display_name} you upgraded your license to class {uLic+1}! You now have {moneys} perles. :card_index:")
+                    with open('users.json', 'w') as outfile:
+                        json.dump(users, outfile)
+                else:
+                    ctx.send(f"{ctx.author.display_name}, you need to more perles before you can upgrade your license!")
+            else:
+                ctx.send(f"{ctx.author.display_name}, you need to catch more fish before you can upgrade your license!")
+        else:
+            ctx.send(f"{ctx.author.display_name}, you currently have the highest level license available!")
 
 @bot.command(aliases=['pearles', 'perles', 'pearls', 'coins', 'moneys', 'moneyz', 'cash', 'dollars', 'fish blood', 'a', 'mooners'])
 async def money(ctx):
