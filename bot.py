@@ -620,11 +620,11 @@ async def buy(ctx, shoop:str, slot:int=0):
                     with open('users.json', 'w') as outfile:
                         json.dump(users, outfile)
                 else:
-                    ctx.send(f"{ctx.author.display_name}, you need to more perles before you can upgrade your license!")
+                    await ctx.send(f"{ctx.author.display_name}, you need to more perles before you can upgrade your license!")
             else:
-                ctx.send(f"{ctx.author.display_name}, you need to catch more fish before you can upgrade your license!")
+                await ctx.send(f"{ctx.author.display_name}, you need to catch more fish before you can upgrade your license!")
         else:
-            ctx.send(f"{ctx.author.display_name}, you currently have the highest level license available!")
+            await ctx.send(f"{ctx.author.display_name}, you currently have the highest level license available!")
 
 @bot.command(aliases=['pearles', 'perles', 'pearls', 'coins', 'moneys', 'moneyz', 'cash', 'dollars', 'fish blood', 'a', 'mooners'])
 async def money(ctx):
