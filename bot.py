@@ -551,7 +551,7 @@ async def store(ctx):
     await ctx.send(embed = store_embed)
 
 @bot.command()
-async def buy(ctx, shoop:str, slot:int):
+async def buy(ctx, shoop:str, slot:int=0):
     if shoop == 'market':
         marketFish = market.get(f'slot{slot}')
         q = marketFish["quality"]
