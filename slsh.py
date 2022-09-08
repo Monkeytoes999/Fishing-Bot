@@ -389,14 +389,14 @@ async def inventory(ctx: discord.Interaction):
     i = 0
     uf = []
     wf = []
-    for i in range(len(fi)-1):
+    for i in range(len(fi)):
         uf.append(rarityGroups[fi[f'{i}']['rarity']-1])
         wf.append(fi[f'{i}']['rarity'])
     cf = len([f for f in uf if f == 'common'])
     ctf = len([f for f in uf if f == 'commont'])
     rf = len([f for f in uf if f == 'rare'])
     ef = len([f for f in uf if f == 'event'])
-    evf = f'\n **{ef}** event fish' if ef > 0 else ''
+    evf = f' and **{ef}** event fish!' if ef > 0 else ''
     bt = (fe['boat']['name']).lower()
     rd = (fe['fishEq']['name']).lower()
     s = fe['seasoning']
@@ -404,7 +404,7 @@ async def inventory(ctx: discord.Interaction):
     in_embed = discord.Embed(
         title = str(f'{ctx.user.display_name}\'s Inventory'),
         type="rich",
-        description=f"You have {len(fi)} total fish\n/storage for a more detailed list of fish"
+        description=f"You have {len(fi)} total fish{evf}\n/storage for a more detailed list of fish"
     )
     in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == cfArS[0]])}\nPike: {len([f for f in wf if f == cfArS[1]])}\nGrunt: {len([f for f in wf if f == cfArS[2]])}\nAngelfish: {len([f for f in wf if f == cfArS[3]])}\nGuppy: {len([f for f in wf if f == cfArS[4]])}")
     in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == ufArS[0]])}\nMarlin: {len([f for f in wf if f == ufArS[1]])}\nTang: {len([f for f in wf if f == ufArS[2]])}\nMudfish: {len([f for f in wf if f == ufArS[3]])}\nTrout: {len([f for f in wf if f == ufArS[4]])}")
