@@ -20,6 +20,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
+ver = "0.0.1"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -40,7 +41,7 @@ bot = BotClient(intents=intents)
 async def on_ready():
     print(f'Logged on as {bot.user.name}')
     print (f'Ok {bot.user.name} is online now')
-    print("Fish bot wants to help")
+    print(f"Fish bot wants to help | {ver}")
 
 async def createUser(userID):
     users[f'{userID}'] = {
