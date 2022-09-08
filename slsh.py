@@ -1,19 +1,9 @@
-from asyncio import base_tasks
-from asyncio.windows_events import NULL
-from code import interact
-from dis import dis, disco
-from platform import release
-from re import U
-from socket import inet_aton
-from typing import Literal, Optional
-from typing_extensions import Required
+from typing import Literal
 import discord
-from discord.ext import tasks, commands
 from discord import app_commands, ui
 import random
 import json
 import time
-import math
 
 tfile = open('token.txt','r')
 tkn = tfile.readline()
