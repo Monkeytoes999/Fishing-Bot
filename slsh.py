@@ -623,7 +623,7 @@ class FModal(ui.Modal, title='Market Purchase'):
         except:
             await ctx.response.send_message("This is not a valid slot.")
 
-eqCost = [500, 2000, 10000, 1000, 5000, 50000, 200, 500]
+eqCost = [100, 2000, 10000, 300, 5000, 50000, 200, 500]
 class EModal(ui.Modal, title="Equipment Purchase"):
     slot = ui.TextInput(label="Equipment Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
