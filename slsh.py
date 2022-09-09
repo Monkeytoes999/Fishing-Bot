@@ -21,7 +21,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1"
+ver = "0.0.1.1"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
