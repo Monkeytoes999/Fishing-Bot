@@ -1,3 +1,4 @@
+from importlib.resources import contents
 from typing import Literal
 import discord
 from discord import app_commands, ui
@@ -507,6 +508,15 @@ async def cook(ctx: discord.Interaction, slot:int=1):
     else:
         await ctx.response.send_message('Invalid inventory slot')
 
+@bot.tree.command(description="View the fish in your aquarium")
+async def aquarium(ctx: discord.Interaction):
+    if (users[f'{ctx.user.id}']['equipment']['aquarium'] == None):
+        await ctx.response.send_message('You don\'t have an aquarium yet! You can buy one in the equipment shop.')
+    else:
+        usAq = users[f'{ctx.user.id}']['equipment']['aquarium']
+        if (usAq["contents"] == []):
+            await ctx.response.send_message('You don\'t have any fish in your aquarium yet! We\'re currently working on making this possible.')
+
 class stVw(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
@@ -531,6 +541,7 @@ class stVw(ui.View):
         fishEq = equipment.get("fishEq")
         rods = fishEq.get("fishRods")
         boats = fishEq.get("boats")
+        aquariums = fishEq.get("aquariums")
         j = 1
         for i in range(3):
             rod = rods.get(f'{i+1}')
@@ -540,6 +551,9 @@ class stVw(ui.View):
             boat = boats.get(f'{i+1}')
             store_embed.add_field(name = f'{j}: {boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
             j=j+1
+        for i in range(3):
+            aquarium = aquariums.get(f'{i+1}')
+            store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:')
         store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
         j=j+1
         store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
@@ -623,16 +637,17 @@ class FModal(ui.Modal, title='Market Purchase'):
         except:
             await ctx.response.send_message("This is not a valid slot.")
 
-eqCost = [100, 2000, 10000, 300, 5000, 50000, 200, 500]
+eqCost = [100, 2000, 10000, 300, 5000, 50000, 100, 2500, 40000, 200, 500]
 class EModal(ui.Modal, title="Equipment Purchase"):
     slot = ui.TextInput(label="Equipment Slot Number")
+    failed = False
     async def on_submit(self, ctx: discord.Interaction):
         try:
             slot = int(f'{self.slot}')
             if (slot < len(eqCost)+1):
                 cost = eqCost[slot-1]
                 if (users[f'{ctx.user.id}']["money"] >= cost):
-                    if (slot > 7):
+                    if (slot > 10):
                         await ctx.response.send_message('These items have not yet been implemented fully. We apologize')
                     else:
                         await ctx.channel.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
@@ -642,15 +657,31 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                         fishEq = equipment.get("fishEq")
                         rods = fishEq.get("fishRods")
                         boats = fishEq.get("boats")
-                        if (slot > 6):
-                            if (slot == 7):
+                        aquariums = fishEq.get("aquariums")
+                        if (slot > 9):
+                            if (slot == 10):
                                 userEq['seasoning'] = userEq['seasoning'] + 50
+                        elif (slot > 6):
+                            if (userEq["aquarium"] != None):
+                                if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
+                                    users[f'{ctx.user.id}']["money"] += cost
+                                    failed = True
+                                    await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")
+                                else:
+                                    tempAq = aquariums[f'{slot-6}']
+                                    tempAq["contents"] = userEq["aquarium"]["contents"]
+                                    tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
+                                    tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
+                                    userEq['aquarium'] = tempAq
+                            else:
+                                userEq['aquarium'] = aquariums[f'{slot-6}']
                         elif (slot > 3):
                             userEq['boat'] = boats[f'{slot-3}']
                         else: 
                             userEq['fishEq'] = rods[f'{slot}']
                         users[f'{ctx.user.id}']['equipment'] = userEq
-                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
+                        if (not failed):
+                            await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
                         with open('users.json', 'w') as outfile:
                             json.dump(users, outfile)
                 else:
