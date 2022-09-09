@@ -541,7 +541,7 @@ class stVw(ui.View):
         fishEq = equipment.get("fishEq")
         rods = fishEq.get("fishRods")
         boats = fishEq.get("boats")
-        aquariums = fishEq.get("aquariums")
+        aquariums = equipment.get("aquariums")
         j = 1
         for i in range(3):
             rod = rods.get(f'{i+1}')
@@ -657,7 +657,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                         fishEq = equipment.get("fishEq")
                         rods = fishEq.get("fishRods")
                         boats = fishEq.get("boats")
-                        aquariums = fishEq.get("aquariums")
+                        aquariums = equipment.get("aquariums")
                         if (slot > 9):
                             if (slot == 10):
                                 userEq['seasoning'] = userEq['seasoning'] + 50
