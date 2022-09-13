@@ -21,7 +21,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.1"
+ver = "0.0.1.2"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -563,7 +563,7 @@ class trnIModal(ui.Modal, title="Transfer In"):
 
 @bot.tree.command(description="View the fish in your aquarium")
 async def aquarium(ctx: discord.Interaction):
-    if (users[f'{ctx.user.id}']['equipment']['aquarium'] == None):
+    if (users[f'{ctx.user.id}']['equipment'].get('aquarium') == None):
         await ctx.response.send_message('You don\'t have an aquarium yet! You can buy one in the equipment shop.')
     else:
         usAq = users[f'{ctx.user.id}']['equipment']['aquarium']
