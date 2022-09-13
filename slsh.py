@@ -21,7 +21,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.2"
+ver = "0.0.1.3"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -513,7 +513,7 @@ class aqVw(ui.View):
         super().__init__(timeout=None)
     @ui.button(label="Trasfer fish in", style=discord.ButtonStyle.green)
     async def trnIn(self, ctx: discord.Interaction, button: ui.button):
-        await ctx.response.send_modal(modal=trnIModal())
+        await ctx.response.send_modal(trnIModal())
     @ui.button(label="Tranfer fish out", style=discord.ButtonStyle.green)
     async def trnOut(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_message("Transferring is still being developed")
@@ -525,7 +525,7 @@ class aqVw(ui.View):
             await ctx.response.send_message("You don't have any fish in your aquarium yet!")
         else:
             aqEmbed = discord.Embed (title = f"{ctx.user.display_name}'s Aquarium", description=f'The fish in this tank make {aq.get("passiveVal")} pearles per hour!')
-            i = 1
+            i = 0
             while (i < len(aqFish) and i < 26):
                 fish = aqFish[f'{i}']
                 r = fish.get("rarity")
@@ -537,22 +537,26 @@ class aqVw(ui.View):
 class trnIModal(ui.Modal, title="Transfer In"):
     slot = ui.TextInput(label="Fish Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
+        slot = int(f'{self.slot}') - 1
         userF = users[f'{ctx.user.id}']['inv']
-        if (userF[f'{self.slot}'] != None):
-            if (userF[f'{self.slot}']["prepBonus"] == 0):
+        if (userF[f'{slot}'] != None):
+            if (userF[f'{slot}']["prepBonus"] == 0):
                 aqC = users[f'{ctx.user.id}']['equipment']['aquarium']['contents']
-                aqC[f'{len(aqC)}'] = userF[f'{self.slot}']
-                usF = userF[f'{self.slot}']
+                aqC[f'{len(aqC)}'] = userF[f'{slot}']
+                usF = userF[f'{slot}']
                 r = usF['rarity']
                 q = usF['quality']
-                users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] = users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] + value(r, q, False, 0)
+                val = await value(r, q, False, 0) 
+                users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] = users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] + val
                 users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = time.time()
                 users[f'{ctx.user.id}']['equipment']['aquarium']['contents'] = aqC
-                for i in range(len(userF)):
-                    if (i > int(f'{self.slot}')):
-                        userF[f'{i-1}'] = userF[f'{i}']
-                del userF[f'{i-1}']
-                users[f'{ctx.user.id}']['inv'] = userF
+                newInv = {}
+                while i < len(users[f'{ctx.user.id}']['inv']):
+                    if i != slot-1:
+                        newInv[f'{j}'] = users[f'{ctx.user.id}']['inv'][f'{i}']
+                        j += 1
+                    i += 1
+                users[f'{ctx.user.id}']['inv'] = newInv
                 with open('users.json', 'w') as outfile:
                     json.dump(users, outfile)
                 await ctx.response.send_message("Fish transferred. Note: Transferring fish resets passive time.")
@@ -566,9 +570,7 @@ async def aquarium(ctx: discord.Interaction):
     if (users[f'{ctx.user.id}']['equipment'].get('aquarium') == None):
         await ctx.response.send_message('You don\'t have an aquarium yet! You can buy one in the equipment shop.')
     else:
-        usAq = users[f'{ctx.user.id}']['equipment']['aquarium']
-        if (usAq["contents"] == []):
-            await ctx.response.send_message('You don\'t have any fish in your aquarium yet! We\'re currently working on making this possible.')
+        await ctx.response.send_message("What would you like to do?", view=aqVw())
 
 class stVw(ui.View):
     def __init__(self) -> None:
@@ -694,9 +696,8 @@ class FModal(ui.Modal, title='Market Purchase'):
 eqCost = [100, 2000, 10000, 300, 5000, 50000, 100, 2500, 40000, 200, 500]
 class EModal(ui.Modal, title="Equipment Purchase"):
     slot = ui.TextInput(label="Equipment Slot Number")
-    failed = False
     async def on_submit(self, ctx: discord.Interaction):
-        try:
+        #try:
             slot = int(f'{self.slot}')
             if (slot < len(eqCost)+1):
                 cost = eqCost[slot-1]
@@ -719,8 +720,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                             if (userEq.get("aquarium") != None):
                                 if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
                                     users[f'{ctx.user.id}']["money"] += cost
-                                    failed = True
-                                    await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")
+                                    await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")      
                                 else:
                                     tempAq = aquariums[f'{slot-6}']
                                     tempAq["contents"] = userEq["aquarium"]["contents"]
@@ -734,16 +734,15 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                         else: 
                             userEq['fishEq'] = rods[f'{slot}']
                         users[f'{ctx.user.id}']['equipment'] = userEq
-                        if (not failed):
-                            await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
+                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
                         with open('users.json', 'w') as outfile:
                             json.dump(users, outfile)
                 else:
                     await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
             else:
                 await ctx.response.send_message("Invalid equipment slot.")
-        except:
-            await ctx.response.send_message("This is not a valid slot.")
+        #except:
+        #    await ctx.response.send_message("This is not a valid slot.")
 
 @bot.tree.command(description="Purchase items from the shop")
 async def buy(ctx: discord.Interaction):
