@@ -607,6 +607,7 @@ class stVw(ui.View):
         for i in range(3):
             aquarium = aquariums.get(f'{i+1}')
             store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:', inline=False)
+            j=j+1
         store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
         j=j+1
         store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
@@ -663,7 +664,7 @@ class lsVw(ui.View):
 class FModal(ui.Modal, title='Market Purchase'):
     slot = ui.TextInput(label="Market Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
-        try:
+        #try:
             slot = int(f'{self.slot}')
             if (slot >= 0 and slot <= 99999):
                 marketFish = market.get(f'slot{slot}')
@@ -687,8 +688,8 @@ class FModal(ui.Modal, title='Market Purchase'):
                     await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
             else:
                 await ctx.response.send_message("This is not a valid slot.")
-        except:
-            await ctx.response.send_message("This is not a valid slot.")
+        #except:
+        #    await ctx.response.send_message("This is not a valid slot.")
 
 eqCost = [100, 2000, 10000, 300, 5000, 50000, 100, 2500, 40000, 200, 500]
 class EModal(ui.Modal, title="Equipment Purchase"):
