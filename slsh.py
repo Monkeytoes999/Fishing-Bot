@@ -664,7 +664,7 @@ class lsVw(ui.View):
 class FModal(ui.Modal, title='Market Purchase'):
     slot = ui.TextInput(label="Market Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
-        #try:
+        try:
             slot = int(f'{self.slot}')
             if (slot >= 0 and slot <= 99999):
                 marketFish = market.get(f'slot{slot}')
@@ -688,8 +688,8 @@ class FModal(ui.Modal, title='Market Purchase'):
                     await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
             else:
                 await ctx.response.send_message("This is not a valid slot.")
-        #except:
-        #    await ctx.response.send_message("This is not a valid slot.")
+        except:
+            await ctx.response.send_message("This is not a valid slot.")
 
 eqCost = [100, 2000, 10000, 300, 5000, 50000, 100, 2500, 40000, 200, 500]
 class EModal(ui.Modal, title="Equipment Purchase"):
@@ -716,7 +716,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                             if (slot == 10):
                                 userEq['seasoning'] = userEq['seasoning'] + 50
                         elif (slot > 6):
-                            if (userEq["aquarium"] != None):
+                            if (userEq.get("aquarium") != None):
                                 if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
                                     users[f'{ctx.user.id}']["money"] += cost
                                     failed = True
