@@ -508,6 +508,59 @@ async def cook(ctx: discord.Interaction, slot:int=1):
     else:
         await ctx.response.send_message('Invalid inventory slot')
 
+class aqVw(ui.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+    @ui.button(label="Trasfer fish in", style=discord.ButtonStyle.green)
+    async def trnIn(self, ctx: discord.Interaction, button: ui.button):
+        await ctx.response.send_modal(modal=trnIModal())
+    @ui.button(label="Tranfer fish out", style=discord.ButtonStyle.green)
+    async def trnOut(self, ctx: discord.Interaction, button: ui.button):
+        await ctx.response.send_message("Transferring is still being developed")
+    @ui.button(label="View fish", style=discord.ButtonStyle.green)
+    async def trnOut(self, ctx: discord.Interaction, button: ui.button):
+        aq = users[f'{ctx.user.id}']['equipment']['aquarium']
+        aqFish = aq['contents']
+        if (len(aqFish) == 0):
+            await ctx.response.send_message("You don't have any fish in your aquarium yet!")
+        else:
+            aqEmbed = discord.Embed (title = f"{ctx.user.display_name}'s Aquarium", description=f'The fish in this tank make {aq.get("passiveVal")} pearles per hour!')
+            i = 1
+            while (i < len(aqFish) and i < 26):
+                fish = aqFish[f'{i}']
+                r = fish.get("rarity")
+                w = fish.get("weight")
+                aqEmbed.add_field(name=f'Fish {i+1}', value=f'A {rarityAr[r-1]} that weighs {w} pounds.')
+                i += 1
+            await ctx.response.send_message(embed=aqEmbed)
+
+class trnIModal(ui.Modal, title="Transfer In"):
+    slot = ui.TextInput(label="Fish Slot Number")
+    async def on_submit(self, ctx: discord.Interaction):
+        userF = users[f'{ctx.user.id}']['inv']
+        if (userF[f'{self.slot}'] != None):
+            if (userF[f'{self.slot}']["prepBonus"] == 0):
+                aqC = users[f'{ctx.user.id}']['equipment']['aquarium']['contents']
+                aqC[f'{len(aqC)}'] = userF[f'{self.slot}']
+                usF = userF[f'{self.slot}']
+                r = usF['rarity']
+                q = usF['quality']
+                users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] = users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] + value(r, q, False, 0)
+                users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = time.time()
+                users[f'{ctx.user.id}']['equipment']['aquarium']['contents'] = aqC
+                for i in range(len(userF)):
+                    if (i > int(f'{self.slot}')):
+                        userF[f'{i-1}'] = userF[f'{i}']
+                del userF[f'{i-1}']
+                users[f'{ctx.user.id}']['inv'] = userF
+                with open('users.json', 'w') as outfile:
+                    json.dump(users, outfile)
+                await ctx.response.send_message("Fish transferred. Note: Transferring fish resets passive time.")
+            else:
+                await ctx.response.send_message("You can't transfer a cooked fish!")
+        else:
+            await ctx.response.send_message("Invalid inventory slot.")
+
 @bot.tree.command(description="View the fish in your aquarium")
 async def aquarium(ctx: discord.Interaction):
     if (users[f'{ctx.user.id}']['equipment']['aquarium'] == None):
@@ -553,7 +606,7 @@ class stVw(ui.View):
             j=j+1
         for i in range(3):
             aquarium = aquariums.get(f'{i+1}')
-            store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:')
+            store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:', inline=False)
         store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
         j=j+1
         store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
