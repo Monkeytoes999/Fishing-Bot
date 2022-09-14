@@ -299,7 +299,7 @@ async def fish(ctx: discord.Interaction):
             else:
                 outMsg = 'You had to release all of the fish you caught because they were too young. Unlucky!' 
         elif numCaught == 1:
-            outMsg = f'{ctx.user.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {w} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.user.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {round(w,2)} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.response.send_message(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.response.send_message(f'{ctx.user.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
@@ -456,7 +456,7 @@ async def storage(ctx: discord.Interaction, page: int=1):
         p = fish["prepBonus"]
         w = fish.get("weight")
         prp = " not" if (p == 0) else ""
-        inv_embed.add_field(name=f'Slot {i+1}', value=f'A {rarityAr[r-1]} that weighs {w} pounds and has{prp} been prepared.')
+        inv_embed.add_field(name=f'Slot {i+1}', value=f'A {rarityAr[r-1]} that weighs {round(w,2)} pounds and has{prp} been prepared.')
         i += 1
     await ctx.response.send_message(embed = inv_embed)
 
@@ -531,7 +531,7 @@ class aqVw(ui.View):
                 fish = aqFish[f'{i}']
                 r = fish.get("rarity")
                 w = fish.get("weight")
-                aqEmbed.add_field(name=f'Fish {i+1}', value=f'A {rarityAr[r-1]} that weighs {w} pounds.')
+                aqEmbed.add_field(name=f'Fish {i+1}', value=f'A {rarityAr[r-1]} that weighs {round(w,2)} pounds.')
                 i += 1
             await ctx.response.send_message(embed=aqEmbed)
     @ui.button(label="Collect passive income", style=discord.ButtonStyle.green)
