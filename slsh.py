@@ -5,6 +5,7 @@ from discord import app_commands, ui
 import random
 import json
 import time
+import math
 
 tfile = open('token.txt','r')
 tkn = tfile.readline()
@@ -21,7 +22,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.3"
+ver = "0.0.1.4"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -518,7 +519,7 @@ class aqVw(ui.View):
     async def trnOut(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_message("Transferring is still being developed")
     @ui.button(label="View fish", style=discord.ButtonStyle.green)
-    async def trnOut(self, ctx: discord.Interaction, button: ui.button):
+    async def vwFish(self, ctx: discord.Interaction, button: ui.button):
         aq = users[f'{ctx.user.id}']['equipment']['aquarium']
         aqFish = aq['contents']
         if (len(aqFish) == 0):
@@ -533,6 +534,16 @@ class aqVw(ui.View):
                 aqEmbed.add_field(name=f'Fish {i+1}', value=f'A {rarityAr[r-1]} that weighs {w} pounds.')
                 i += 1
             await ctx.response.send_message(embed=aqEmbed)
+    @ui.button(label="Collect passive income", style=discord.ButtonStyle.green)
+    async def psCll(self, ctx: discord.Interaction, button: ui.button):
+        aq = users[f'{ctx.user.id}']['equipment']['aquarium']
+        ttnxt = ((time.time()-aq['lastChecked'])/60)%60
+        inc = math.floor((time.time()-aq['lastChecked'])/3600)
+        users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = (time.time() - ttnxt*60)
+        users[f'{ctx.user.id}']['money'] = users[f'{ctx.user.id}']['money'] + inc*aq['passiveVal']
+        with open('users.json', 'w') as outfile:
+            json.dump(users, outfile)
+        await ctx.response.send_message(f"You made {inc*aq['passiveVal']} from the fish in your tank. You have {math.ceil(60-ttnxt)} more minutes before you can collect income again!")
 
 class trnIModal(ui.Modal, title="Transfer In"):
     slot = ui.TextInput(label="Fish Slot Number")
