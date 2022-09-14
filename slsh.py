@@ -22,7 +22,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.4"
+ver = "0.0.1.5"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -512,12 +512,12 @@ async def cook(ctx: discord.Interaction, slot:int=1):
 class aqVw(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
-    @ui.button(label="Trasfer fish in", style=discord.ButtonStyle.green)
+    @ui.button(label="Transfer fish in", style=discord.ButtonStyle.green)
     async def trnIn(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_modal(trnIModal())
-    @ui.button(label="Tranfer fish out", style=discord.ButtonStyle.green)
+    @ui.button(label="Transfer fish out", style=discord.ButtonStyle.green)
     async def trnOut(self, ctx: discord.Interaction, button: ui.button):
-        await ctx.response.send_message("Transferring is still being developed")
+        await ctx.response.send_modal(trnOModal())
     @ui.button(label="View fish", style=discord.ButtonStyle.green)
     async def vwFish(self, ctx: discord.Interaction, button: ui.button):
         aq = users[f'{ctx.user.id}']['equipment']['aquarium']
@@ -537,14 +537,16 @@ class aqVw(ui.View):
     @ui.button(label="Collect passive income", style=discord.ButtonStyle.green)
     async def psCll(self, ctx: discord.Interaction, button: ui.button):
         aq = users[f'{ctx.user.id}']['equipment']['aquarium']
-        ttnxt = ((time.time()-aq['lastChecked'])/60)%60
-        inc = math.floor((time.time()-aq['lastChecked'])/3600)
-        users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = (time.time() - ttnxt*60)
-        users[f'{ctx.user.id}']['money'] = users[f'{ctx.user.id}']['money'] + inc*aq['passiveVal']
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
-        await ctx.response.send_message(f"You made {inc*aq['passiveVal']} from the fish in your tank. You have {math.ceil(60-ttnxt)} more minutes before you can collect income again!")
-
+        if (len(aq['contents']) > 0):
+            ttnxt = ((time.time()-aq['lastChecked'])/60)%60
+            inc = math.floor((time.time()-aq['lastChecked'])/3600)
+            users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = (time.time() - ttnxt*60)
+            users[f'{ctx.user.id}']['money'] = users[f'{ctx.user.id}']['money'] + inc*aq['passiveVal']
+            with open('users.json', 'w') as outfile:
+                json.dump(users, outfile)
+            await ctx.response.send_message(f"You made {inc*aq['passiveVal']} from the fish in your tank. You have {math.ceil(60-ttnxt)} more minutes before you can collect income again!")
+        else:
+            await ctx.response.send_message("You have no fish in your aquarium right now!")
 class trnIModal(ui.Modal, title="Transfer In"):
     slot = ui.TextInput(label="Fish Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
@@ -562,8 +564,10 @@ class trnIModal(ui.Modal, title="Transfer In"):
                 users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = time.time()
                 users[f'{ctx.user.id}']['equipment']['aquarium']['contents'] = aqC
                 newInv = {}
+                i = 0
+                j = 0
                 while i < len(users[f'{ctx.user.id}']['inv']):
-                    if i != slot-1:
+                    if i != slot:
                         newInv[f'{j}'] = users[f'{ctx.user.id}']['inv'][f'{i}']
                         j += 1
                     i += 1
@@ -575,6 +579,39 @@ class trnIModal(ui.Modal, title="Transfer In"):
                 await ctx.response.send_message("You can't transfer a cooked fish!")
         else:
             await ctx.response.send_message("Invalid inventory slot.")
+
+class trnOModal(ui.Modal, title="Transfer Out"):
+    slot = ui.TextInput(label="Fish Slot Number")
+    async def on_submit(self, ctx: discord.Interaction):
+        slot = int(f'{self.slot}') - 1
+        aqC = users[f'{ctx.user.id}']['equipment']['aquarium']['contents']
+        if (aqC[f'{slot}'] != None):
+            userF = users[f'{ctx.user.id}']['inv']
+            aqC = users[f'{ctx.user.id}']['equipment']['aquarium']['contents']
+            userF[f'{len(userF)}'] = aqC[f'{slot}']
+            usF = aqC[f'{slot}']
+            r = usF['rarity']
+            q = usF['quality']
+            val = await value(r, q, False, 0) 
+            users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] = users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] - val
+            if (len(aqC) == 1):
+                users[f'{ctx.user.id}']['equipment']['aquarium']['passiveVal'] = 0
+            users[f'{ctx.user.id}']['equipment']['aquarium']['lastChecked'] = time.time()
+            users[f'{ctx.user.id}']['inv'] = userF
+            newInv = {}
+            i = 0
+            j = 0
+            while i < len(aqC):
+                if i != slot:
+                    newInv[f'{j}'] = aqC[f'{i}']
+                    j += 1
+                i += 1
+            users[f'{ctx.user.id}']['equipment']['aquarium']['contents'] = newInv
+            with open('users.json', 'w') as outfile:
+                json.dump(users, outfile)
+            await ctx.response.send_message("Fish transferred. Note: Transferring fish resets passive time.")
+        else:
+            await ctx.response.send_message("Invalid fish slot.")
 
 @bot.tree.command(description="View the fish in your aquarium")
 async def aquarium(ctx: discord.Interaction):
