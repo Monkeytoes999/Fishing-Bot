@@ -705,11 +705,14 @@ class lsVw(ui.View):
         uLic = userInfo["license"]
         fLPrice = [100, 5000]
         moneys = users[f'{ctx.user.id}']["money"]
-        users[f'{ctx.user.id}']['license'] = uLic+1
-        users[f'{ctx.user.id}']['money'] = moneys - fLPrice[uLic]
-        await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys} perles. :card_index:")
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
+        if (moneys >= fLPrice[uLic]):
+            users[f'{ctx.user.id}']['license'] = uLic+1
+            users[f'{ctx.user.id}']['money'] = moneys - fLPrice[uLic]
+            await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys} perles. :card_index:")
+            with open('users.json', 'w') as outfile:
+                json.dump(users, outfile)
+        else:
+            await ctx.response.send_message("You don't have the pearles to make this purchase! :chart_with_downwards_trend:")
 
 class FModal(ui.Modal, title='Market Purchase'):
     slot = ui.TextInput(label="Market Slot Number")
