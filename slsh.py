@@ -22,7 +22,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.5"
+ver = "0.0.1.6"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -514,7 +514,11 @@ class aqVw(ui.View):
         super().__init__(timeout=None)
     @ui.button(label="Transfer fish in", style=discord.ButtonStyle.green)
     async def trnIn(self, ctx: discord.Interaction, button: ui.button):
-        await ctx.response.send_modal(trnIModal())
+        aq = users[f'{ctx.user.id}']['equipment']['aquarium']
+        if(len(aq['contents']) < aq['size']):
+            await ctx.response.send_modal(trnIModal())
+        else:
+            await ctx.response.send_message("You can't fit any more fish in this aquarium!")
     @ui.button(label="Transfer fish out", style=discord.ButtonStyle.green)
     async def trnOut(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_modal(trnOModal())
