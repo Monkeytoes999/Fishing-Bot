@@ -724,21 +724,24 @@ class FModal(ui.Modal, title='Market Purchase'):
                 q = marketFish["quality"]
                 r = marketFish["rarity"]
                 f = marketFish["from"] != users[f'{ctx.user.id}']["pos"]
-                p = marketFish["prepBonus"]
-                cost = await value(r,q,f,p)
-                if (users[f'{ctx.user.id}']["money"] >= cost):
-                    users[f'{ctx.user.id}']["money"] -= cost
-                    moneys = users[f'{ctx.user.id}']["money"]
-                    userInv = users[f'{ctx.user.id}']['inv'] 
-                    users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
-                    market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], users[f'{ctx.user.id}']['location'])
-                    await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
-                    with open('users.json', 'w') as outfile:
-                        json.dump(users, outfile)
-                    with open('market.json', 'w') as outfile:
-                        json.dump(market, outfile)
+                if (f):
+                    p = marketFish["prepBonus"]
+                    cost = await value(r,q,False,p)
+                    if (users[f'{ctx.user.id}']["money"] >= cost):
+                        users[f'{ctx.user.id}']["money"] -= cost
+                        moneys = users[f'{ctx.user.id}']["money"]
+                        userInv = users[f'{ctx.user.id}']['inv'] 
+                        users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
+                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], users[f'{ctx.user.id}']['location'])
+                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
+                        with open('users.json', 'w') as outfile:
+                            json.dump(users, outfile)
+                        with open('market.json', 'w') as outfile:
+                            json.dump(market, outfile)
+                    else:
+                        await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
                 else:
-                    await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
+                    await ctx.response.send_message(f"{ctx.user.display_name}, this was originally your fish! You can't purchase it again.")
             else:
                 await ctx.response.send_message("This is not a valid slot.")
         except:
