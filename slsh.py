@@ -208,7 +208,7 @@ posLoc = ['bathtub', 'creek', 'pond', 'lake', 'ocean']
 @bot.tree.command(description="Allows you to travel to a new fishing location")
 async def travel(ctx: discord.Interaction, loc: Literal['bathtub', 'creek', 'pond', 'lake', 'ocean']):
     if users[f'{ctx.user.id}']['license'] < locations[f'{posLoc.index(loc)-1}']['license']:
-        await ctx.send("You don't have a high enough license level to fish there!")
+        await ctx.response.send_message("You don't have a high enough license level to fish there!")
     else:
         users[f'{ctx.user.id}']['location'] = f'{posLoc.index(loc)-1}'
         with open('users.json', 'w') as outfile:
@@ -674,7 +674,7 @@ class stVw(ui.View):
             fLPrice = [100, 5000]
             if uFTot >= fLCount[uLic]:
                 if userInfo["money"] >= fLPrice[uLic]:
-                    ctx.response.send_message(f"You're about to upgrade your license to tier {uLic + 1}. This will cost {fLPrice[uLic]} pearles. Do you want to continue?", view=lsVw(), ephemeral=True)
+                   await ctx.response.send_message(f"You're about to upgrade your license to tier {uLic + 1}. This will cost {fLPrice[uLic]} pearles. Do you want to continue?", view=lsVw(), ephemeral=True)
                 else:
                     await ctx.response.send_message(f"{ctx.user.display_name}, you need to more perles before you can upgrade your license!")
             else:
