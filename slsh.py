@@ -299,7 +299,7 @@ async def fish(ctx: discord.Interaction):
             else:
                 outMsg = 'You had to release all of the fish you caught because they were too young. Unlucky!' 
         elif numCaught == 1:
-            outMsg = f'{ctx.user.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {round(w,2)} lbs and worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.user.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {round(w,2)} lbs and is worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.response.send_message(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.response.send_message(f'{ctx.user.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
@@ -708,7 +708,7 @@ class lsVw(ui.View):
         if (moneys >= fLPrice[uLic]):
             users[f'{ctx.user.id}']['license'] = uLic+1
             users[f'{ctx.user.id}']['money'] = moneys - fLPrice[uLic]
-            await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys} perles. :card_index:")
+            await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys - fLPrice[uLic]} perles. :card_index:")
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
         else:
