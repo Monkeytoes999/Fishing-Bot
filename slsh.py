@@ -23,7 +23,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.6"
+ver = "0.0.1.7"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -240,6 +240,60 @@ async def gif(ctx: discord.Interaction):
     else:
         await ctx.response.send_message(file=discord.File('Fish-N.gif'))
 
+def validExp(dt):
+    if (dt == 'd' or dt == 's' or dt == 'b'):
+        return True
+    return False
+
+def explore(userID):
+    explored = users[f'{userID}']['map']['explored']
+    stp = explored[random.randint(0,len(explored)-1)]
+    place = False
+    exp = []
+    rep = 0
+    if (stp != [17,6]):
+        while (not place):
+            goto = random.randint(1,4)
+            if (goto == 1):
+                if (stp[0] < 19):
+                    if validExp((mp[stp[0]+1][stp[1]])):
+                        place = True
+                        exp = [stp[0]+1, stp[1]]
+            elif (goto == 2):
+                if (stp[0] > 0):
+                    if validExp((mp[stp[0]-1][stp[1]])):
+                        place = True
+                        exp = [stp[0]-1, stp[1]]    
+            elif (goto == 3):
+                if (stp[1] < 19):
+                    if validExp((mp[stp[0]][stp[1]+1])):
+                        place = True
+                        exp = [stp[0], stp[1]+1]
+            else:
+                if (stp[1] > 0):
+                    if validExp((mp[stp[0]][stp[1]-1])):
+                        place = True
+                        exp = [stp[0], stp[1]-1]
+            if (exp in explored and rep%7 < 6 and rep < 50):
+                place = False
+                rep += 1
+            elif (exp in explored and rep%7 == 6 and rep < 50):
+                place = False
+                stp = explored[random.randint(0,len(explored)-1)]
+                rep += 1
+    else:
+        goto = random.randint(1,2)
+        if (goto == 1):
+            exp = [16,6]
+        else:
+            exp = [18,6]
+    if (not exp in explored):
+        users[f'{userID}']['map']['explored'].append(exp)
+        users[f'{userID}']['map']['last'] = exp
+        with open('users.json', 'w') as outfile:
+            json.dump(users, outfile)
+    return exp
+
 @bot.tree.command(description="Go fishing for something new")
 async def fish(ctx: discord.Interaction):
     userInfo = users.get('{}'.format(ctx.user.id))
@@ -255,6 +309,7 @@ async def fish(ctx: discord.Interaction):
         users[f'{ctx.user.id}']['prof']['fishTime'] = users[f'{ctx.user.id}']['prof']['fishTime'] + users[f'{ctx.user.id}']["lastDur"]
         totVal = 0
         numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/4))
+        explore(ctx.user.id)
         if numCaught == 0:
             numCaught = random.randint(0,1)
         r = 0
@@ -689,7 +744,7 @@ async def map(ctx: discord.Interaction):
     w = png.Writer(600,600, greyscale=False)
     w.write(f, p)
     f.close()
-    await ctx.response.send_message(file=discord.File('swatch.png'))
+    await ctx.response.send_message("Here's what you've found!", file=discord.File('swatch.png'))
 
 class stVw(ui.View):
     def __init__(self) -> None:
