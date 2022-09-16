@@ -6,6 +6,7 @@ import random
 import json
 import time
 import math
+import png
 
 tfile = open('token.txt','r')
 tkn = tfile.readline()
@@ -623,6 +624,72 @@ async def aquarium(ctx: discord.Interaction):
         await ctx.response.send_message('You don\'t have an aquarium yet! You can buy one in the equipment shop.')
     else:
         await ctx.response.send_message("What would you like to do?", view=aqVw())
+
+unrevealed = [0,0,0]
+sand = [243,211,65]
+grass = [0,154,23]
+shallow = [0,83,255]
+deep = [9,1,185]
+dock = [169,159,132]
+boat = [114,90,61]
+lastLoc = [200,1,43]
+
+mp = [['d','d','d','d','d','s','i','i','i','i','i','s','s','d','d','d','d','d','d','d'],['d','d','d','d','d','s','s','i','i','i','i','s','s','d','d','d','d','d','d','d'],['d','d','d','d','d','d','s','s','s','s','s','s','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','s','s','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','b','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['s','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['s','s','s','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['i','s','s','s','s','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d'],['i','i','i','i','s','s','s','d','d','d','d','d','d','d','d','d','d','d','d','d'],['g','g','i','i','i','i','s','d','d','d','d','d','d','d','d','d','d','b','d','d'],['g','g','g','i','i','i','k','k','k','d','d','d','d','d','d','d','d','d','d','d'],['g','b','g','g','i','i','s','s','d','d','d','d','d','d','d','d','d','d','d','d'],['g','g','g','g','g','i','i','s','d','d','d','d','d','d','d','d','d','d','d','d']]
+starting = [[14,0],[15,0],[15,1],[15,2],[15,3],[16,0],[16,1],[16,2],[16,3],[16,4],[16,5],[17,0],[17,1],[17,2],[17,3],[17,4],[17,5],[17,6],[17,7],[17,8],[18,0],[18,1],[18,2],[18,3],[18,4],[18,5],[19,0],[19,1],[19,2],[19,3],[19,4],[19,5],[19,6]]
+@bot.tree.command(description="View where you've been on the map!")
+async def map(ctx: discord.Interaction):
+    if (users[f'{ctx.user.id}'].get("map") == None):
+        users[f'{ctx.user.id}']['map'] = {"explored": [[17,6]], "last": [17,6]}
+        with open('users.json', 'w') as outfile:
+            json.dump(users, outfile)
+    explored = users[f'{ctx.user.id}']['map']['explored']
+    last = users[f'{ctx.user.id}']['map']['last']
+    i = 0
+    j = 0
+    r = []
+    p = []
+    for i in range(len(mp)*30):
+        v = math.floor(i/30)
+        for j in range(len(mp[0])):
+            tp = mp[v][j]
+            col = unrevealed
+            if (tp == 'd'):
+                col = deep
+            elif (tp == 's'):
+                col = shallow
+            elif (tp == 'g'):
+                col = grass
+            elif (tp == 'k'):
+                col = dock
+            elif (tp == 'b'):
+                col = boat
+            elif (tp == 'i'):
+                col = sand
+            else:
+                col = lastLoc
+            if not [v,j] in explored and not [v,j] in starting:
+                col = unrevealed
+            for k in range(30):
+                r.append(col[0])
+                r.append(col[1])
+                r.append(col[2])
+        p.append(r)
+        r = []
+    rr = 0 + 30*last[0]
+    cc = 0 + 90*last[1]
+    i = 0
+    j = 0
+    for i in range(30):
+        for j in range(90):
+            if (i < 3 or i > 26):
+                p[rr+i][cc+j] = lastLoc[j%3]
+            elif (j < 9 or j > 78):
+                p[rr+i][cc+j] = lastLoc[j%3]
+    f = open('swatch.png', 'wb')
+    w = png.Writer(600,600, greyscale=False)
+    w.write(f, p)
+    f.close()
+    await ctx.response.send_message(file=discord.File('swatch.png'))
 
 class stVw(ui.View):
     def __init__(self) -> None:
