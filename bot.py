@@ -132,7 +132,7 @@ async def createProfile(userID):
         json.dump(users, outfile)
 
 @bot.event
-async def on_command(ctx):
+async def on_interaction(ctx):
     if not str(ctx.author.id) in users:
         await createUser(ctx.author.id)
         await ctx.send(f'{ctx.author.display_name}, you now have a bot profile.')
