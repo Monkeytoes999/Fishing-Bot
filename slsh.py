@@ -104,7 +104,7 @@ async def rarity(userLoc, loc):
     return res
         
 async def locDepth(location):
-    depth = mp[location]
+    depth = mp[location[0]][location[1]]
     dpi = 0
     if depth == "s":
         dpi = 1
@@ -337,7 +337,7 @@ async def fish(ctx: discord.Interaction):
                 w = 0.01
             else:
                 fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"))
-                if (mp[loc] == "b"):
+                if (mp[loc[0]][loc[1]] == "b"):
                     if (users[f"{ctx.user.id}"].get("markets") != None):
                         users[f"{ctx.user.id}"]["markets"] = users[f'{ctx.user.id}']["markets"].append(loc)
                     else:
