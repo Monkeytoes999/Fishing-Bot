@@ -337,7 +337,7 @@ async def fish(ctx: discord.Interaction):
                 w = 0.01
             else:
                 fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"))
-                dpi = await locDepth()
+                dpi = await locDepth(loc)
                 if (mp[loc[0]][loc[1]] == "b"):
                     if (users[f"{ctx.user.id}"].get("markets") != None):
                         users[f"{ctx.user.id}"]["markets"] = users[f'{ctx.user.id}']["markets"].append(loc)
