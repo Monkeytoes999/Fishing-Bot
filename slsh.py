@@ -73,7 +73,7 @@ async def createUser(userID):
 async def pullFish(userPos, loc, userLoc):
     rr = await rarity(userLoc, loc)
     dpi = await locDepth(loc)
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(1.92/dpi)*locations[userLoc]["wMulti"])}
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(dpi/1.92)*locations[userLoc]["wMulti"])}
     return fish
 
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
@@ -337,6 +337,7 @@ async def fish(ctx: discord.Interaction):
                 w = 0.01
             else:
                 fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"))
+                dpi = await locDepth
                 if (mp[loc[0]][loc[1]] == "b"):
                     if (users[f"{ctx.user.id}"].get("markets") != None):
                         users[f"{ctx.user.id}"]["markets"] = users[f'{ctx.user.id}']["markets"].append(loc)
