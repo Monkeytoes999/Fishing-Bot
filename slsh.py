@@ -499,13 +499,15 @@ async def inventory(ctx: discord.Interaction):
 async def storage(ctx: discord.Interaction, page: int=1):
     num = len(users[f'{ctx.user.id}']['inv'])
     totVal = 0
-    for fish in users[f'{ctx.user.id}']['inv']:
+    i = 0
+    while (i < len(users[f'{ctx.user.id}']['inv'])):
+        fish = users[f'{ctx.user.id}']['inv'][f'{i}']
         fq = fish.get("quality")
         fr = fish.get("rarity")
         ff = fish.get("from") != users[f'{ctx.user.id}']["pos"]
         fp = fish["prepBonus"]
-        fw = fish.get("weight")
         totVal += await value(fr, fq, ff, fp)
+        i += 1
     if (page==1 and num >24):
         n = 1
         inv_embed = discord.Embed(
