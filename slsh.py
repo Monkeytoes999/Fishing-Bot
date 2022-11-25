@@ -498,33 +498,41 @@ async def inventory(ctx: discord.Interaction):
 @app_commands.describe(page='The page of storage to view')
 async def storage(ctx: discord.Interaction, page: int=1):
     num = len(users[f'{ctx.user.id}']['inv'])
+    totVal = 0
+    for fish in users[f'{ctx.user.id}']['inv']:
+        fq = fish.get("quality")
+        fr = fish.get("rarity")
+        ff = fish.get("from") != users[f'{ctx.user.id}']["pos"]
+        fp = fish["prepBonus"]
+        fw = fish.get("weight")
+        totVal += await value(fr, fq, ff, fp)
     if (page==1 and num >24):
         n = 1
         inv_embed = discord.Embed(
             title=str(f'{ctx.user.display_name}\'s storage | Page 1'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are the first 24."
+            description=f"You have {num} fish in your storage worth a combined {totVal} pearles. Here are the first 24."
         )
     elif (num <= 24):
         n = 1
         inv_embed = discord.Embed(
             title=str(f'{ctx.user.display_name}\'s storage | Page 1'),
             type="rich",
-            description=f"You have {num} fish in your storage."
+            description=f"You have {num} fish in your storage worth a combined {totVal} pearles."
         )
     elif (num >= page*24):
         n = 24*(page-1)+1
         inv_embed = discord.Embed(
             title=str(f'{ctx.user.display_name}\'s storage | Page {page}'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are fish {n}-{n+23}."
+            description=f"You have {num} fish in your storage worth a combined {totVal} pearles. Here are fish {n}-{n+23}."
         )
     else:
         n = num-23
         inv_embed = discord.Embed(
             title=str(f'{ctx.user.display_name}\'s storage | Last page'),
             type="rich",
-            description=f"You have {num} fish in your storage. Here are fish {n}-{n+23}."
+            description=f"You have {num} fish in your storage worth a combined {totVal} pearles. Here are fish {n}-{n+23}."
         )
     i = n-1
     while (i < len(users[f'{ctx.user.id}']['inv']) and i < n+23):
