@@ -70,9 +70,10 @@ async def createUser(userID):
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile) 
            
-async def pullFish(userPos, userLoc):
-    rr = await rarity(userLoc)
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+locations[userLoc]["wMulti"])}
+async def pullFish(userPos, loc, userLoc):
+    rr = await rarity(userLoc, loc)
+    dpi = await locDepth(loc)
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(1.92/dpi)*locations[userLoc]["wMulti"])}
     return fish
 
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
@@ -88,19 +89,28 @@ maxWeight = 294
 #fishAr = [African glass catfish,African lungfish,Aholehole,Airbreathing catfish,Airsac catfish,Alaska blackfish,Albacore,Alewife,Alfonsino,Algae eater,Alligatorfish,Alligator gar,Amberjack,American sole,Amur pike,Anchovy,Anemonefish,Angelfish,Angler,Angler catfish,Anglerfish,Antarctic cod,Antarctic icefish,Antenna codlet,Arapaima,Archerfish,Arctic char,Armored gurnard,Armored searobin,Armorhead,Armorhead catfish,Armoured catfish,Arowana,Arrowtooth eel,Asian carps,Asiatic glassfish,Atka mackerel,Atlantic bonito,Atlantic cod,Atlantic herring,Atlantic salmon,Atlantic sharpnose shark,Atlantic saury,Atlantic silverside,Australasian salmon,Australian grayling,Australian herring,Australian lungfish,Australian prowfish,Ayu,Baikal oilfish,Bala shark,Ballan wrasse,Bamboo shark,Banded killifish,Bandfish,Banjo,Bangus,Banjo catfish,Barb,Barbel,Barbeled dragonfish,Barbeled houndshark,Barbel-less catfish,Barfish,Barracuda,Barracudina,Barramundi,Barred danio,Barreleye,Basking shark,Bass,Basslet,Batfish,Bat ray,Beachsalmon,Beaked salmon,Beaked sandfish,Beardfish,Beluga sturgeon,Bengal danio,Betta,Bichir,Bicolor goat fish,Bigeye,Bigeye squaretail,Bighead carp,Bigmouth buffalo,Bigscale,Bigscale pomfret,Billfish,Bitterling,Black angelfish,Black bass,Black dragonfish,Blackchin,Blackfin Tuna,Blackfish,Black neon tetra,Blacktip reef shark,Black mackerel,Black scalyfin,Black sea bass,Black scabbardfish,Black swallower,Black tetra,Black triggerfish,Bleak,Blenny,Blind goby,Blind shark,Blobfish,Blowfish,Blue catfish,Blue danio,Blue-redstripe danio,Blue eye trevalla,Bluefin tuna,Bluefish,Bluegill,Blue gourami,Blue shark,Blue triggerfish,Blue whiting,Bluntnose knifefish,Bluntnose minnow,Boafish,Boarfish,Bobtail snipe eel,Bocaccio,Boga,Bombay duck,Bonefish,Bonito,Bonnethead shark,Bonnetmouth,Bonytail,Bonytongue,Bowfin,Boxfish,Bramble shark,Bream,Brill,Bristlemouth,Bristlenose catfish,Broadband dogfish,Bronze corydoras,Brook lamprey,Brook stickleback,Brook trout,Brotula,Brown trout,Buffalo fish,Bullhead,Bullhead shark,Bull shark,Bull trout,Burbot,Bumblebee goby,Buri,Burma danio,Burrowing goby,Butterfish,Butterfly ray,Butterflyfish,California flyingfish,California halibut,Canary rockfish,Candiru,Candlefish,Capelin,Cardinalfish,Cardinal tetra,Carp,Carpetshark,Carpsucker,Catalufa,Catfish,Catla,Cat shark,Cavefish,Celebes rainbowfish,Central mudminnow,Chain pickerel,Channel bass,Channel catfish,Char,Cherry salmon,Chimaera,Chinook salmon,Cherubfish,Chub,Chubsucker,Chum salmon,Cichlid,Cisco,Climbing catfish,Climbing gourami,Climbing perch,Clingfish,Clownfish,Clown loach,Clown triggerfish,Cobbler,Cobia,Cod,Codlet,Codling,Coelacanth,Coffinfish,Coho salmon,Coley,Collared carpetshark,Collared dogfish,Colorado squawfish,Combfish,Combtail gourami,Combtooth blenny,Common carp,Common tunny,Conger eel,Convict blenny,Convict cichlid,Cookie-cutter shark,Coolie loach,Cornetfish,Cowfish,Cownose ray,Cow shark,Crappie,Creek chub,Crestfish,Crevice kelpfish,Croaker,Crocodile icefish,Crocodile shark,Crucian carp,Cuckoo wrasse,Cusk,Cusk-eel,Cutlassfish,Cutthroat eel,Cutthroat trout,Dab,Dace,Daggertooth pike conger,Damselfish,Danio,Darter,Dartfish,Dealfish,Death Valley pupfish,Deep sea eel,Deep sea smelt,Deepwater cardinalfish,Deepwater flathead,Deepwater stingray,Delta smelt,Demoiselle,Denticle herring,Desert pupfish,Devario,Devil ray,Dhufish,Discus,Dogfish,Dogfish shark,Dogteeth tetra,Dojo loach,Dolly Varden trout,Dolphin fish,Dorab wolf-herring,Dorado,Dory,Dottyback,Dragonet,Dragonfish,Dragon goby,Driftfish,Driftwood catfish,Drum,Duckbill,Duckbill eel,Dusky grouper,Dusky shark,Dwarf gourami,Dwarf loach,Eagle ray,Earthworm eel,Eel,Eel cod,Eel-goby,Eelpout,Eeltail catfish,Elasmobranch,Electric catfish,Electric eel,Electric knifefish,Electric ray,Elephant fish,Elephantnose fish,Elver,Ember parrotfish,Emerald catfish,Emperor,Emperor angelfish,Emperor bream,Escolar,Eucla cod,Eulachon,European chub,European eel,European flounder,European minnow,European perch,False brotula,False cat shark,False moray,False trevally,Fangtooth,Fathead sculpin,Featherback,Fierasfer,Fire goby,Filefish,Finback cat shark,Fingerfish,Fire bar danio,Firefish,Flabby whale fish,Flagblenny,Flagfin,Flagfish,Flagtail,Flashlight fish,Flatfish,Flathead,Flathead catfish,Flier,Flounder,Flying gurnard,Flying fish,Footballfish,Forehead brooder,Four-eyed fish,French angelfish,Freshwater eel,Freshwater hatchetfish,Freshwater shark,Frigate mackerel,Frilled shark,Frogfish,Frogmouth catfish,Fusilier fish,Galjoen fish,Ganges shark,Gar,Garden eel,Garibaldi,Garpike,Ghost fish,Ghost flathead,Ghost knifefish,Ghost pipefish,Ghost shark,Ghoul,Giant danio,Giant gourami,Giant sea bass,Gibberfish,Gila trout,Gizzard shad,Glass catfish,Glassfish,Glass knifefish,Glowlight danio,Goatfish,Goblin shark,Goby,Golden dojo,Golden loach,Golden shiner,Golden trout,Goldeye,Goldfish,Gombessa,Goosefish,Gopher rockfish,Gourami,Grass carp,Graveldiver,Grayling,Gray mullet,Gray reef shark,Great white shark,Green swordtail,Greeneye,Greenling,Grenadier,Green spotted puffer,Ground shark,Grouper,Grunion,Grunt,Grunter,Grunt sculpin,Gudgeon,Guitarfish,Gulf menhaden,Gulper eel,Gulper,Gunnel,Guppy,Gurnard,Haddock,Hagfish,Hairtail,Hake,Halfbeak,Halfmoon,Halibut,Halosaur,Hamlet,Hammerhead shark,Hammerjaw,Handfish,Hardhead catfish,Harelip sucker,Hatchetfish,Hawkfish,Herring,Herring smelt,Hickory Shad,Hillstream loach,Hog sucker,Hoki,Horn shark,Horsefish,Houndshark,Huchen,Humuhumunukunukuapua/'a,Hussar,Icefish,Ide,Ilish/Hilsha,Inanga,Inconnu,Jack,Jackfish,Jack Dempsey,Japanese eel,Javelin,Jawfish,Jellynose fish,Jewelfish,Jewel tetra,Jewfish,John Dory,Kafue pike,Kahawai,Kaluga,Kanyu,Kelp perch,Kelpfish,Killifish,King of the herrings,Kingfish,King-of-the-salmon,Kissing gourami,Knifefish,Knifejaw,Koi,Kokanee,Kokopu,Kuhli loach,Labyrinth fish,Ladyfish,Lake chub,Lake trout,Lake whitefish,Lampfish,Lamprey,Lancetfish,Lanternfish,Largemouth bass,Leaffish,Leatherjacket,Lefteye flounder,Lemon shark,Lemon sole,Lemon tetra,Lenok,Leopard danio,Lightfish,Limia,Lined sole,Ling,Ling cod,Lionfish,Livebearer,Lizardfish,Loach,Loach catfish,Loach goby,Loach minnow,Longfin,Longfin dragonfish,Longfin escolar,Longfin smelt,Long-finned char,Long-finned pike,Long-finned sand diver,Longjaw mudsucker,Longneck eel,Longnose chimaera,Longnose dace,Longnose lancetfish,Longnose sucker,Longnose whiptail catfish,Long-whiskered catfish,Loosejaw,Lost River sucker,Louvar,Loweye catfish,Luderick,Luminous hake,Lumpsucker,Lungfish,Mackerel,Mackerel shark,Madtom,Mahi-mahi,Mahseer,Mail-cheeked fish,Mako shark,Mandarinfish,Manefish,Man-of-war fish,Manta ray,Marblefish,Marine hatchetfish,Marlin,Masu salmon,Medaka,Medusafish,Megamouth shark,Menhaden,Merluccid hake,Mexican golden trout,Midshipman fish,Milkfish,Minnow,Minnow of the deep,Modoc sucker,Mojarra,Mola mola,Monkeyface prickleback,Monkfish,Mooneye,Moonfish,Moorish idol,Mora,Moray eel,Morid cod,Morwong,Moses sole,Mosquitofish,Mouthbrooder,Mozambique tilapia,Mrigal,Mud catfish,Mudfish,Mudminnow,Mud minnow,Mudskipper,Mudsucker,Mullet,Mummichog,Murray cod,Muskellunge,Mustache triggerfish,Mustard eel,Naked-back knifefish,Nase,Needlefish,Neon tetra,New World rivuline,New Zealand sand diver,New Zealand smelt,Nibble fish,Noodlefish,North American darter,North American freshwater catfish,North Pacific daggertooth,Northern anchovy,Northern clingfish,Northern lampfish,Northern pike,Northern sea robin,Northern squawfish,Northern stargazer,Notothen,Nurseryfish,Nurse shark,Oarfish,Ocean perch,Ocean sunfish,Oceanic whitetip shark,Oilfish,Oldwife,Old World knifefish,Olive flounder,Opah,Opaleye,Orange roughy,Orangespine unicorn fish,Orangestriped triggerfish,Orbicular batfish,Orbicular velvetfish,Oregon chub,Orfe,Oriental loach,Oscar,Owens pupfish,Pacific albacore,Pacific cod,Pacific hake,Pacific herring,Pacific lamprey,Pacific salmon,Pacific saury,Pacific trout,Pacific viperfish,Paddlefish,Pancake batfish,Panga,Paradise fish,Parasitic catfish,Parore,Parrotfish,Peacock flounder,Peamouth,Pearleye,Pearlfish,Pearl danio,Pearl perch,Pelagic cod,Pelican eel,Pelican gulper,Pencil catfish,Pencilfish,Pencilsmelt,Peppered corydoras,Perch,Peters' elephantnose fish,Pickerel,Pigfish,Pike conger,Pike eel,Pike,Pikeblenny,Pikeperch,Pilchard,Pilot fish,Pineapplefish,Pineconefish,Pink salmon,Píntano,Pipefish,Piranha,Pirarucu,Pirate perch,Plaice,Platy,Platyfish,Pleco,Plownose chimaera,Poacher,Pollyfish,Pollock,Pomfret,Pompano,Pompano dolphinfish,Ponyfish,Popeye catalufa,Porbeagle shark,Porcupinefish,Porgy,Port Jackson shark,Powen,Prickleback,Pricklefish,Prickly shark,Prowfish,Pufferfish,Pumpkinseed,Pupfish,Pygmy sunfish,Queen danio,Queen parrotfish,Queen triggerfish,Quillback,Quillfish,Rabbitfish,Raccoon butterfly fish,Ragfish,Rainbow trout,Rainbowfish,Rasbora,Ratfish,Rattail,Ray,Razorback sucker,Razorfish,Red grouper,Red salmon,Red snapper,Redfin perch,Redfish,Redhorse sucker,Redlip blenny,Redmouth whalefish,Redtooth triggerfish,Red velvetfish,Red whalefish,Reedfish,Reef triggerfish,Remora,Requiem shark,Ribbon eel,Ribbon sawtail fish,Ribbonfish,Rice eel,Ricefish,Ridgehead,Riffle dace,Righteye flounder,Rio Grande perch,River loach,River shark,River stingray,Rivuline,Roach,Roanoke bass,Rock bass,Rock beauty,Rock cod,Rocket danio,Rockfish,Rockling,Rockweed gunnel,Rohu,Ronquil,Roosterfish,Ropefish,Rough scad,Rough sculpin,Roughy,Roundhead,Round herring,Round stingray,Round whitefish,Rudd,Rudderfish,Ruffe,Russian sturgeon,Sábalo,Sabertooth,Saber-toothed blenny,Sabertooth fish,Sablefish,Sacramento blackfish,Sacramento splittail,Sailfin silverside,Sailfish,Salamanderfish,Salmon,Salmon shark,Sandbar shark,Sandburrower,Sand dab,Sand diver,Sand eel,Sandfish,Sand goby,Sand knifefish,Sand lance,Sandperch,Sandroller,Sand stargazer,Sand tiger,Sand tilefish,Sandbar shark,Sarcastic fringehead,Sardine,Sargassum fish,Sauger,Saury,Sawfish,Saw shark,Sawtooth eel,Scabbard fish,Scaly dragonfish,Scat,Scissortail rasbora,Scorpionfish,Sculpin,Scup,Sea bass,Sea bream,Sea catfish,Sea chub,Sea devil,Sea dragon,Sea lamprey,Sea raven,Sea snail,Sea toad,Seahorse,Seamoth,Searobin,Sevan trout,Sergeant major,Shad,Shark,Sharksucker,Sharpnose puffer,Sheatfish,Sheepshead,Sheepshead minnow,Shiner,Shortnose chimaera,Shortnose sucker,Shovelnose sturgeon,Shrimpfish,Siamese fighting fish,Sillago,Silver carp,Silver dollar,Silver dory,Silver hake,Silverside,Silvertip tetra,Sind danio,Sixgill ray,Sixgill shark,Skate,Skilfish,Skipjack tuna,Slender mola,Slender snipe eel,Sleeper,Sleeper shark,Slickhead,Slimehead,Slimy mackerel,Slimy sculpin,Slipmouth,Smalleye squaretail,Smalltooth sawfish,Smelt,Smelt-whiting,Smooth dogfish,Snailfish,Snake eel,Snakehead,Snake mackerel,Snapper,Snipe eel,Snipefish,Snook,Snubnose eel,Snubnose parasitic eel,Sockeye salmon,Soldierfish,Sole,South American darter,South American lungfish,Southern Dolly Varden,Southern flounder,Southern hake,Southern sandfish,Southern smelt,Spadefish,Spaghetti eel,Spanish mackerel,Spearfish,Speckled trout,Spiderfish,Spikefish,Spinefoot,Spiny basslet,Spiny dogfish,Spiny dwarf catfish,Spiny eel,Spinyfin,Splitfin,Spookfish,Spotted climbing perch,Spotted danio,Spottail pinfish,Sprat,Springfish,Squarehead catfish,Squaretail,Squawfish,Squeaker,Squirrelfish,Staghorn sculpin,Stargazer,Starry flounder,Steelhead,Stickleback,Stingfish,Stingray,Stonecat,Stonefish,Stoneroller minnow,Stream catfish,Striped bass,Striped burrfish,Sturgeon,Sucker,Suckermouth armored catfish,Summer flounder,Sundaland noodlefish,Sunfish,Surf sardine,Surfperch,Surgeonfish,Swallower,Swamp-eel,Swampfish,Sweeper,Swordfish,Swordtail,Tadpole cod,Tadpole fish,Tailor,Taimen,Tang,Tapetail,Tarpon,Tarwhine,Telescopefish,Temperate bass,Temperate ocean-bass,Temperate perch,Tench,Tenpounder,Tenuis,Tetra,Thorny catfish,Thornfish,Threadfin,Threadfin bream,Thread-tail,Three spot gourami,Threespine stickleback,Three-toothed puffer,Thresher shark,Tidewater goby,Tiger barb,Tigerperch,Tiger shark,Tiger shovelnose catfish,Tilapia,Tilefish,Titan triggerfish,Toadfish,Tommy ruff,Tompot blenny,Tonguefish,Tope,Topminnow,Torpedo,Torrent catfish,Torrent fish,Trahira,Treefish,Trevally,Triggerfish,Triplefin blenny,Triplespine,Tripletail,Tripod fish,Trout,Trout cod,Trout-perch,Trumpeter,Trumpetfish,Trunkfish,Tubeblenny,Tube-eye,Tube-snout,Tubeshoulder,Tui chub,Tuna,Turbot,Two spotted goby,Uaru,Unicorn fish,Upside-down catfish,Vanjaram,Velvet belly lanternshark,Velvet catfish,Velvetfish,Vendace,Vermilion snapper,Vimba,Viperfish,Wahoo,Walking catfish,Wallago,Walleye,Walleye pollock,Walu,Warmouth,Warty angler,Waryfish,Waspfish,Weasel shark,Weatherfish,Weever,Weeverfish,Wels catfish,Whale catfish,Whalefish,Whale shark,Whiff,Whitebait,White croaker,Whitefish,White marlin,White shark,Whitetip reef shark,Whiting,Wobbegong,Wolf-eel,Wolffish,Wolf-herring,Worm eel,Wormfish,Wrasse,Wrymouth,X-ray tetra,Yellow-and-black triplefin,Yellowback fusilier,Yellowbanded perch,Yellow bass,Yellowedge grouper,Yellow-edged moray,Yellow-eye mullet,Yellowhead jawfish,Yellowfin croaker,Yellowfin cutthroat trout,Yellowfin grouper,Yellowfin tuna,Yellowfin pike,Yellowfin surgeonfish,Yellowfin tuna,Yellow jack,Yellowmargin triggerfish,Yellow moray,Yellow perch,Yellowtail,Yellowtail amberjack,Yellowtail barracuda,Yellowtail clownfish,Yellowtail horse mackerel,Yellowtail kingfish,Yellowtail snapper,Yellow tang,Yellow weaver,Yellowtail catfish,Zander,Zebra bullhead shark,Zebra danio,Zebrafish,Zebra lionfish,Zebra loach,Zebra oto,Zebra pleco,Zebra shark,Zebra tilapia,Zebra turkeyfish,Ziege,Zingel]
 
 
-async def rarity(userLoc):
+async def rarity(userLoc, loc):
     available = locations[userLoc]["population"]
     res = -1
+    depth = await locDepth(loc)
     while (res == -1):
         rarity = random.random()
         if (rarity < .75):
             res =  cfArS[random.randint(0,len(available["cAr"])-1)]
         elif (rarity < .95):
             res = ufArS[random.randint(0,len(available["uAr"])-1)]
-        elif (available.get("rAr") != None):
+        elif (available.get("rAr") != None and depth > 1):
             res = available["rAr"][random.randint(0,len(available["rAr"])-1)]
     return res
         
+async def locDepth(location):
+    depth = mp[location]
+    dpi = 0
+    if depth == "s":
+        dpi = 1
+    elif (depth == "d" or depth == "b"):
+        dpi = 2
+    return dpi
 
 async def value(rarity, quality, foreign, prep):
     if rarity in cfArS:
@@ -200,35 +210,36 @@ async def log(ctx: discord.Interaction):
     await ctx.response.send_message(embed=fd_embed)
 
 
-@bot.tree.command(description="Tells you where you are currently fishing")
-async def location(ctx: discord.Interaction):
-    userInfo = users[f'{ctx.user.id}']
-    await ctx.response.send_message(f"You are currently fishing in {locations[userInfo['location']]['knAs']}")
+# @bot.tree.command(description="Tells you where you are currently fishing")
+# async def location(ctx: discord.Interaction):
+#     userInfo = users[f'{ctx.user.id}']
+#     await ctx.response.send_message(f"You are currently fishing in {locations[userInfo['location']]['knAs']}")
 
-posLoc = ['bathtub', 'creek', 'pond', 'lake', 'ocean']
-@bot.tree.command(description="Allows you to travel to a new fishing location")
-async def travel(ctx: discord.Interaction, loc: Literal['bathtub', 'creek', 'pond', 'lake', 'ocean']):
-    if users[f'{ctx.user.id}']['license'] < locations[f'{posLoc.index(loc)-1}']['license']:
-        await ctx.response.send_message("You don't have a high enough license level to fish there!")
-    else:
-        users[f'{ctx.user.id}']['location'] = f'{posLoc.index(loc)-1}'
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
-        await ctx.response.send_message(f"You are now fishing in {locations[users[f'{ctx.user.id}']['location']]['knAs']}")
+# posLoc = ['bathtub', 'creek', 'pond', 'lake', 'ocean']
+# @bot.tree.command(description="Allows you to travel to a new fishing location")
+# async def travel(ctx: discord.Interaction, loc: Literal['bathtub', 'creek', 'pond', 'lake', 'ocean']):
+#     if users[f'{ctx.user.id}']['license'] < locations[f'{posLoc.index(loc)-1}']['license']:
+#         await ctx.response.send_message("You don't have a high enough license level to fish there!")
+#     else:
+#         users[f'{ctx.user.id}']['location'] = f'{posLoc.index(loc)-1}'
+#         with open('users.json', 'w') as outfile:
+#             json.dump(users, outfile)
+#         await ctx.response.send_message(f"You are now fishing in {locations[users[f'{ctx.user.id}']['location']]['knAs']}")
 
 @bot.tree.command(description="Gives you information on your current license status")
 async def license(ctx: discord.Interaction):
-    userInfo = users[f'{ctx.user.id}']
-    uLic = userInfo["license"]
-    uFTot = 0
-    for type in userInfo["fishlog"]:
-        uFTot = uFTot + userInfo["fishlog"][type]
-    nxL = 'You currently have the highest level license available!'
-    if uLic < 2:
-        fLCount = [50, 1000]
-        fLPrice = [100, 5000]
-        nxL = f"You need to catch a total of {fLCount[uLic]} fish and pay a fee of {fLPrice[uLic]} perles to upgrade your license. If you are ready to upgrade your license, run \"/buy license\""
-    await ctx.response.send_message(f"You currently have a class {uLic} license, and have caught a total of {uFTot} fish. {nxL}")
+    # userInfo = users[f'{ctx.user.id}']
+    # uLic = userInfo["license"]
+    # uFTot = 0
+    # for type in userInfo["fishlog"]:
+    #     uFTot = uFTot + userInfo["fishlog"][type]
+    # nxL = 'You currently have the highest level license available!'
+    # if uLic < 2:
+    #     fLCount = [50, 1000]
+    #     fLPrice = [100, 5000]
+    #     nxL = f"You need to catch a total of {fLCount[uLic]} fish and pay a fee of {fLPrice[uLic]} perles to upgrade your license. If you are ready to upgrade your license, run \"/buy license\""
+    # await ctx.response.send_message(f"You currently have a class {uLic} license, and have caught a total of {uFTot} fish. {nxL}")
+    await ctx.response.send_message(f"Licenses are currently being reworked.")
 
 @bot.tree.command(description="Displays a random fish gif")
 async def gif(ctx: discord.Interaction):
@@ -309,7 +320,7 @@ async def fish(ctx: discord.Interaction):
         users[f'{ctx.user.id}']['prof']['fishTime'] = users[f'{ctx.user.id}']['prof']['fishTime'] + users[f'{ctx.user.id}']["lastDur"]
         totVal = 0
         numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/4))
-        explore(ctx.user.id)
+        loc = explore(ctx.user.id)
         if numCaught == 0:
             numCaught = random.randint(0,1)
         r = 0
@@ -325,7 +336,13 @@ async def fish(ctx: discord.Interaction):
                 totVal = 0
                 w = 0.01
             else:
-                fish = await pullFish(userInfo.get("pos"), userInfo.get("location"))
+                fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"))
+                if (mp[loc] == "b"):
+                    if (users[f"{ctx.user.id}"].get("markets") != None):
+                        users[f"{ctx.user.id}"]["markets"] = users[f'{ctx.user.id}']["markets"].append(loc)
+                    else:
+                        users[f"{ctx.user.id}"]["markets"] = [loc]
+                    await ctx.channel.send(f"{ctx.user.display_name}, you just discovered a new market! Use the /markets command for more information!")
                 if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"] and fish.get("weight") > fishWeights[fish.get("rarity")-1]*.85):
                     q = fish.get("quality")
                     r = fish.get("rarity")
@@ -365,6 +382,11 @@ async def fish(ctx: discord.Interaction):
         json.dump(users, outfile)
     with open('leaderboards.json', 'w') as outfile:
         json.dump(leaderboards, outfile)
+
+
+@bot.tree.command(description="View the markets that you've encountered")
+async def markets(ctx: discord.Interaction):
+    await ctx.response.send_message("Markets are still in development, but any markets that you've found will stay in consideration!")
 
 @bot.tree.command(description="Trade a fish from your inventory into the market")
 async def trade(ctx: discord.Interaction, slot:int):
@@ -790,23 +812,24 @@ class stVw(ui.View):
         await ctx.response.send_message(embed=store_embed, view=eqVw())
     @ui.button(label="License", style=discord.ButtonStyle.green)
     async def lics(self, ctx: discord.Interaction, button: ui.button):
-        userInfo = users[f'{ctx.user.id}']
-        uLic = userInfo["license"]
-        uFTot = 0
-        for type in userInfo["fishlog"]:
-            uFTot = uFTot + userInfo["fishlog"][type]
-        if uLic < 2:
-            fLCount = [50, 1000]
-            fLPrice = [100, 5000]
-            if uFTot >= fLCount[uLic]:
-                if userInfo["money"] >= fLPrice[uLic]:
-                   await ctx.response.send_message(f"You're about to upgrade your license to tier {uLic + 1}. This will cost {fLPrice[uLic]} pearles. Do you want to continue?", view=lsVw(), ephemeral=True)
-                else:
-                    await ctx.response.send_message(f"{ctx.user.display_name}, you need to more perles before you can upgrade your license!")
-            else:
-                await ctx.response.send_message(f"{ctx.user.display_name}, you need to catch more fish before you can upgrade your license!")
-        else:
-            await ctx.response.send_message(f"{ctx.user.display_name}, you currently have the highest level license available!")
+        # userInfo = users[f'{ctx.user.id}']
+        # uLic = userInfo["license"]
+        # uFTot = 0
+        # for type in userInfo["fishlog"]:
+        #     uFTot = uFTot + userInfo["fishlog"][type]
+        # if uLic < 2:
+        #     fLCount = [50, 1000]
+        #     fLPrice = [100, 5000]
+        #     if uFTot >= fLCount[uLic]:
+        #         if userInfo["money"] >= fLPrice[uLic]:
+        #            await ctx.response.send_message(f"You're about to upgrade your license to tier {uLic + 1}. This will cost {fLPrice[uLic]} pearles. Do you want to continue?", view=lsVw(), ephemeral=True)
+        #         else:
+        #             await ctx.response.send_message(f"{ctx.user.display_name}, you need to more perles before you can upgrade your license!")
+        #     else:
+        #         await ctx.response.send_message(f"{ctx.user.display_name}, you need to catch more fish before you can upgrade your license!")
+        # else:
+        #     await ctx.response.send_message(f"{ctx.user.display_name}, you currently have the highest level license available!")
+        await ctx.response.send_message("Licenses are currently undergoing a rework.")
 
 class mkVw(ui.View):
     def __init__(self) -> None:
@@ -858,7 +881,7 @@ class FModal(ui.Modal, title='Market Purchase'):
                         moneys = users[f'{ctx.user.id}']["money"]
                         userInv = users[f'{ctx.user.id}']['inv'] 
                         users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
-                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], users[f'{ctx.user.id}']['location'])
+                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'])
                         await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
                         with open('users.json', 'w') as outfile:
                             json.dump(users, outfile)
