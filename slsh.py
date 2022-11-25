@@ -23,7 +23,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.7"
+ver = "0.0.1.8"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -73,7 +73,7 @@ async def createUser(userID):
 async def pullFish(userPos, loc, userLoc):
     rr = await rarity(userLoc, loc)
     dpi = await locDepth(loc)
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(dpi/1.92)*locations[userLoc]["wMulti"])}
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(dpi^.3)*locations[userLoc]["wMulti"])}
     return fish
 
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
@@ -344,7 +344,7 @@ async def fish(ctx: discord.Interaction):
                     else:
                         users[f"{ctx.user.id}"]["markets"] = [loc]
                     await ctx.channel.send(f"{ctx.user.display_name}, you just discovered a new market! Use the /markets command for more information!")
-                if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"] and fish.get("weight") > fishWeights[fish.get("rarity")-1]*.85):
+                if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"] and fish.get("weight") > fishWeights[fish.get("rarity")-1]*dpi^.4*.85):
                     q = fish.get("quality")
                     r = fish.get("rarity")
                     w = fish.get("weight")
