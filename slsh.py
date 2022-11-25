@@ -360,10 +360,10 @@ async def fish(ctx: discord.Interaction):
                 elif (fish.get("weight") <= fishWeights[fish.get("rarity")-1]*.85):
                     rCount = rCount + 1
                     released = f" you had to release {rCount} young fish, but"
-                    numCaught = i-1
+                    numCaught = numCaught-1
                 else:
                     snapped = ' before your line snapped.'
-                    numCaught = i-1
+                    numCaught = numCaught-1
         users[f'{ctx.user.id}']['fishlog'] = fdex
         users[f'{ctx.user.id}']["isFishing"] = 0
         outMsg = f'{ctx.user.display_name},{released} your fishing trip yielded {numCaught} fish{snapped} Their total value is {totVal} perles! :fishing_pole_and_fish:'
