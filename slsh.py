@@ -7,6 +7,7 @@ import json
 import time
 import math
 import png
+import cook
 
 tfile = open('token.txt','r')
 tkn = tfile.readline()
