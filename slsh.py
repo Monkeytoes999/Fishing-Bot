@@ -381,10 +381,11 @@ async def fish(ctx: discord.Interaction):
             await createProfile(ctx.user.id)
         users[f'{ctx.user.id}']['prof']['fishTime'] = users[f'{ctx.user.id}']['prof']['fishTime'] + users[f'{ctx.user.id}']["lastDur"]
         totVal = 0
-        numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/3/userInfo["equipment"]["fishEq"]["quality"]))
+        numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/(3/userInfo["equipment"]["fishEq"]["quality"])))
         loc = explore(ctx.user.id)
         if numCaught == 0:
             numCaught = random.randint(0,1)
+        print(numCaught)
         numCaught = numCaught + random.triangular(0, users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"])
         print(numCaught)
         print(users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"])
