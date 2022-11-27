@@ -1,0 +1,27 @@
+{
+    "1": {
+        "name": "Microwave",
+        "description": "Would you rather keep feeding people raw fish?",
+        "cost": 100
+    },
+    "2": {
+        "name": "Stovetop",
+        "description": "Used for sauteing fish and impressing French people.",
+        "cost": 500
+    },
+    "3": {
+        "name": "Oven",
+        "description": "Used for baking, broiling fish, or holding down papers.",
+        "cost": 700
+    },
+    "4": {
+        "name": "Deep Fryer",
+        "description": "When regular frying isn't enough, fry it deep. Breadcrumbs required.",
+        "cost": 1000
+    },
+    "5": {
+        "name": "Grill",
+        "description": "Used for grilling the fish. Obviously.",
+        "cost": 1500
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "1": {
+        "name": "Pepper",
+        "description": "Makes food taste better.",
+        "cost": 100
+    },
+    "2": {
+        "name": "Salt",
+        "description": "A seasoning from the gods.",
+        "cost": 100
+    },
+    "3": {
+        "name": "Garlic Salt",
+        "description": "Ecstacy in every bite.",
+        "cost": 100
+    },
+    "4": {
+        "name": "Chives",
+        "description": "For those that like the color green.",
+        "cost": 100
+    },
+    "5": {
+        "name": "Breadcrumbs",
+        "description": "Ooh. Crunchy",
+        "cost": 100
+    },
+    "6": {
+        "name": "Soy Sauce",
+        "description": "Can cover up poorly cooked fish.",
+        "cost": 100
+    }
+}

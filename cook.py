@@ -20,6 +20,10 @@ lcFile = open('locations.json')
 locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
+cookFile = open('cooking.json')
+cooking = json.load(cookFile)
+seasFile = open('seasonings.json')
+seasonings = json.load(seasFile)
 
 # Version number
 beaver = "0.0.0.1"
@@ -175,25 +179,19 @@ class FModal(ui.Modal, title='Market Purchase'):
         except:
             await ctx.response.send_message("This is not a valid slot.")
 
-#Basically just what the button says under the store embed
-class mkVw(ui.View):
+# Shop Button
+class csVw(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     @ui.button(label="Make a purchase", style=discord.ButtonStyle.green)
     async def mktP(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_modal(FModal())
 
-#Your main store embed
-async def mrkt(self, ctx: discord.Interaction, button: ui.button):
-        shop_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
-        page = ""
-        for i in range(10):
-            marketSlot = random.randint(0,99999)
-            marketFish = market.get(f"slot{marketSlot}")
-            while (marketFish.get("from") == users.get(f'{ctx.user.id}').get("pos") or marketFish.get("from") == -2):
-                marketSlot = random.randint(0,99999)
-                marketFish = market.get(f"slot{marketSlot}")
-            prep = "prepared" if (marketFish.get("prepBonus") > 0) else "Not prepared"
-            page += f'**Slot**: {marketSlot}, Origin: {marketFish.get("from")}, Quality: {await qualify(marketFish.get("quality"))}, Type: {rarityAr[marketFish.get("rarity")-1]}. {prep}. \n'
-        shop_embed.add_field(name="Item", value = f'{page}', inline = False)
-        await ctx.response.send_message(embed=shop_embed, view=mkVw())
+# Store Embed
+async def chef(self, ctx: discord.Interaction, button: ui.button):
+    chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
+    for i in range len(cooking):
+        name = cooking[i].name
+        page = cooking[i].description
+        chef_embed.add_field(name=f'{name}', value = f'{page}', inline = False)
+    #await ctx.response.send_message(embed=shop_embed, view=mkVw())
