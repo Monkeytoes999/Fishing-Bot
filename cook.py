@@ -21,6 +21,14 @@ leaderboards = json.load(ldbFile)
 
 beaver = "0.0.0.1"
 
+rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
+rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare', 'novelty']
+fishNames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish', 'rubber ducky']
+fishWeights = [12, 2.1, .93, 18.5, 210, 1.32, 28, 0.0003, 0.0005, 7, 2, 0.0002, 0.015, 23, 45, 45, 0.011]
+cfArS = [1, 2, 3, 11, 12]
+ufArS = [4, 5, 6, 13, 14]
+rfArS = [7, 8, 9, 15, 16]
+
 async def prepare(ctx: discord.Interaction, slot:int=1):
     if (slot>len(users.get(f'{ctx.user.id}').get('inv'))):
         await ctx.response.send_message('Invalid inventory slot')
@@ -40,7 +48,8 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
             pr = 4
         oVal = await value(r,q,f,0)
         skill = users.get(f'{ctx.user.id}').get(f'{"reputation"}')/100
-        if (3**(pr-1) < skill): skill = 3**(pr-1)
+        if (3**(pr-1) < skill): 
+            skill = 3**(pr-1)
         p = .1
         p += 2 if (users[f'{ctx.user.id}']['equipment'].get('stove') != None) else 0
         sS = ''
