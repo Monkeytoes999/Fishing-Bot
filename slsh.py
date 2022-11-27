@@ -474,7 +474,7 @@ async def trade(ctx: discord.Interaction, slot:int):
 
 @bot.tree.command(description="Prepare your fish with seasonings or with accumulated skill")
 async def prepare(ctx: discord.Interaction, slot:int=1):
-    cookF.prepare(ctx, slot)
+    await cookF.prepare(ctx, slot)
 
 @bot.tree.command(guild=discord.Object(901489176384507914), description="Developer Command")
 async def special(ctx: discord.Interaction, name:str, num:int):
@@ -588,7 +588,7 @@ async def checkfish(ctx: discord.Interaction, slot: int):
 
 @bot.tree.command(description="Cook a fish from your inventory")
 async def cook(ctx: discord.Interaction, slot:int=1):
-    cookF.cook(ctx, slot)
+    await cookF.cook(ctx, slot)
 
 class aqVw(ui.View):
     def __init__(self) -> None:
