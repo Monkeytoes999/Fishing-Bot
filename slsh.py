@@ -185,13 +185,6 @@ async def rarity(userLoc, loc, rc):
             res = 9
         else:
             res = 15
-    while (res == -1):
-        if (rarity < .75):
-            res =  cfArS[random.randint(0,len(available["cAr"])-1)]
-        elif (rarity < .95):
-            res = ufArS[random.randint(0,len(available["uAr"])-1)]
-        elif (available.get("rAr") != None and depth > 1):
-            res = available["rAr"][random.randint(0,len(available["rAr"])-1)]
     return res
         
 async def locDepth(location):
