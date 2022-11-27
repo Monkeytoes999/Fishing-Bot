@@ -69,7 +69,7 @@ async def getRarityLevel(rarity):
         out = 2
     elif rarity in rfArS:
         out = 3
-    else
+    else:
         out = 4
     return out
 
