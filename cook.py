@@ -191,7 +191,7 @@ class csVw(ui.View):
 async def chef(self, ctx: discord.Interaction, button: ui.button):
     chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
     for i in range(len(cooking)):
-        name = cooking[i].name
-        page = cooking[i].description
+        name = cooking[i]["name"]
+        page = cooking[i]["description"]
         chef_embed.add_field(name=f'{name}', value = f'{page}', inline = False)
     await ctx.response.send_message(embed=chef_embed, view=csVw())
