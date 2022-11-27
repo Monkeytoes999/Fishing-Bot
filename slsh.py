@@ -68,6 +68,10 @@ async def createUser(userID):
         "lastCd": 0,
         "location": '0',
         "license": 0,
+        "map": {
+            "explored": [[17, 6]],
+            "last": [17, 6]
+        }
     }
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile) 
