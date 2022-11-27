@@ -33,6 +33,7 @@ cfArS = [1, 2, 3, 11, 12]
 ufArS = [4, 5, 6, 13, 14]
 rfArS = [7, 8, 9, 15, 16]
 
+# Value function
 async def value(rarity, quality, foreign, prep):
     if rarity in cfArS:
         rarity = 1
@@ -43,10 +44,11 @@ async def value(rarity, quality, foreign, prep):
     else:
         rarity = 4
     if (foreign):
-        return round(3 + rarity*5 + quality*5 + prep) 
+        return round(3 + rarity*5 + quality*5 + prep)
     else:
         return round(rarity*5 + quality*5 + prep)
 
+# Satisfaction function
 async def satisfaction(r, q, p):
     if r in cfArS:
         r = 1
@@ -58,6 +60,20 @@ async def satisfaction(r, q, p):
         r = 4
     return r+3*q+random.randint(0,2)+p*2
 
+# Quality function
+async def getRarityLevel(rarity) {
+    out = 0
+    if rarity in cfArS:
+        out = 1
+    elif rarity in ufArS:
+        out = 2
+    elif rarity in rfArS:
+        out = 3
+    else
+        out = 4
+    return out
+}
+
 # Prepare
 async def prepare(ctx: discord.Interaction, slot:int=1):
     if (slot > len(users.get(f'{ctx.user.id}').get('inv'))):
@@ -68,18 +84,11 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         q = fish.get("quality")
         r = fish.get("rarity")
         f = fish.get("from") != users[f'{ctx.user.id}']["pos"]
-        if r in cfArS:
-            pr = 1
-        elif r in ufArS:
-            pr = 2
-        elif r in rfArS:
-            pr = 3
-        else:
-            pr = 4
-        oVal = await value(r,q,f,0)
+        pr = getRarityLevel(r)
+        oVal = await value(r, q, f, 0)
         skill = users.get(f'{ctx.user.id}').get(f'{"reputation"}')/100
-        if (3**(pr-1) < skill): 
-            skill = 3**(pr-1)
+        if (3**(pr - 1) < skill):
+            skill = 3**(pr - 1)
         p = 0.1
         if (users[f'{ctx.user.id}']['equipment'].get('stove') != None):
             p += 2
