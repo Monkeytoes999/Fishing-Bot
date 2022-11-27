@@ -829,7 +829,7 @@ class stVw(ui.View):
         await ctx.response.send_message("Licenses are currently undergoing a rework.")
     @ui.button(label="Cooking EQ", style=discord.ButtonStyle.green)
     async def chefsp(self, ctx: discord.Interaction, button: ui.button):
-        cook.chef(self, ctx, button)
+        cookF.chef(self, ctx, button)
 
 class mkVw(ui.View):
     def __init__(self) -> None:
