@@ -917,7 +917,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                                 await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")      
                             else:
                                 tempAq = aquariums[f'{slot-6}']
-                                if (users[f'{ctx.user.id}']["owned"][tempAq["name"]]):
+                                if (users[f'{ctx.user.id}']["aquariums"]["owned"][tempAq["name"]]):
                                     users[f'{ctx.user.id}']["money"] += cost
                                     await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
                                 else:
@@ -929,13 +929,13 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                         else:
                             userEq['aquarium'] = aquariums[f'{slot-6}']
                     elif (slot > 3):
-                        if (users[f'{ctx.user.id}']["owned"][boats[f'{slot-3}']["name"]]):
+                        if (users[f'{ctx.user.id}']["owned"]["boats"][boats[f'{slot-3}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
                             await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
                         else:
                             userEq['boat'] = boats[f'{slot-3}']
                     else: 
-                        if (users[f'{ctx.user.id}']["owned"][rods[f'{slot}']["name"]]):
+                        if (users[f'{ctx.user.id}']["owned"]["fishEq"][rods[f'{slot}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
                             await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
                         else:
