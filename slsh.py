@@ -7,7 +7,7 @@ import json
 import time
 import math
 import png
-import cook
+import cook as cookF
 
 tfile = open('token.txt','r')
 tkn = tfile.readline()
@@ -24,7 +24,7 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
-ver = "0.0.1.8"
+ver = "0.0.1.9"
 
 class BotClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -52,12 +52,13 @@ async def createUser(userID):
         "pos": len(users),
         "money": 0,
         "fishlog": {
-        "bass": 0, "pike": 0, "grunt": 0, "angelfish": 0, "guppy": 0,
-        "cod": 0, "marlin": 0, "tang": 0, "mudfish": 0, "trout": 0,
-        "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0,
+        "bass": 0, "pike": 0, "grunt": 0, "angelfish": 0, "guppy": 0, "anchovy": 0,
+        "cod": 0, "marlin": 0, "tang": 0, "mudfish": 0, "trout": 0, "eel": 0,
+        "snapper": 0, "tetra": 0, "firefish": 0, "parrotfish": 0, "catfish": 0, "fallfish": 0,
         "bonefish": 0
-        },
-        "equipment": {"fishEq":{"name": "Stick", "quality": 0.1, "price": 0}, "boat":{"name": "raft", "cooldown": 5, "dur": 5, "price": 0}, "seasoning": 0},
+        }, #Rarity Chance, Extra Fish, Extra Fish Chance, Weight Chance
+        "equipment": {"fishEq": {"name": "Stick", "quality": 0.1, "price": 0, "rc": 0, "ef": 0, "efc": 0, "wc": 0}, "boat": {"name": "raft", "cooldown": 5, "dur": 5, "price": 0}, "seasonings": {}, "cooking": {}},
+        "owned": {"fishEq": {"Stick": True, "Lillian Butterfly": False, "Azule Etoi": False, "Melo II": False}, "boat": {"raft": True, "Rickety Rowboat": False, "Dubious Dinghy": False, "Stylish Speedboat": False}, "aquariums": {"Fish Bowl": False, "Small Tank": False, "Large Tank": False}},
         "inv": {},
         "contacts": {},
         "reputation": 1,
@@ -66,36 +67,121 @@ async def createUser(userID):
         "lastDur": 0,
         "lastCd": 0,
         "location": '0',
-        "license": 0
+        "license": 0,
     }
     with open('users.json', 'w') as outfile:
         json.dump(users, outfile) 
            
-async def pullFish(userPos, loc, userLoc):
-    rr = await rarity(userLoc, loc)
+async def pullFish(userPos, loc, userLoc, uID):
+    rc = users[f'{uID}']["equipment"]["fishEq"]["rc"]
+    wc = users[f'{uID}']["equipment"]["fishEq"]["wc"]
+    rr = await rarity(userLoc, loc, rc)
     dpi = await locDepth(loc)
-    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(random.randrange(7500,14000,1)/10000+(dpi**.3)*locations[userLoc]["wMulti"])}
+    fish = {"from":userPos, "rarity": rr, "quality": random.random(), "prepBonus": 0, "weight": fishWeights[rr-1]*(1+wc)*(random.randrange(7500,14000,1)/10000+(dpi**.3)*locations[userLoc]["wMulti"])}
     return fish
 
-rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
-rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare', 'novelty']
-fishNames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish', 'rubber ducky']
-fishWeights = [12, 2.1, .93, 18.5, 210, 1.32, 28, 0.0003, 0.0005, 7, 2, 0.0002, 0.015, 23, 45, 45, 0.011]
-cfArS = [1, 2, 3, 11, 12]
-ufArS = [4, 5, 6, 13, 14]
-rfArS = [7, 8, 9, 15, 16]
+rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky', 'rare fallfish', 'common anchovy', 'common\'t eel']
+rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare', 'novelty', 'rare', 'common', 'commont']
+fishNames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish', 'rubber ducky', 'fallfish', 'anchovy', 'eel']
+fishWeights = [12, 2.1, .93, 18.5, 210, 1.32, 28, 0.0003, 0.0005, 7, 2, 0.0002, 0.015, 23, 45, 45, 0.011, 2.2, 0.075, 55]
+cfArS = [1, 2, 3, 11, 12, 19]
+ufArS = [4, 5, 6, 13, 14, 20]
+rfArS = [7, 8, 9, 15, 16, 18]
 
 maxWeight = 294
 
 #fishAr = [African glass catfish,African lungfish,Aholehole,Airbreathing catfish,Airsac catfish,Alaska blackfish,Albacore,Alewife,Alfonsino,Algae eater,Alligatorfish,Alligator gar,Amberjack,American sole,Amur pike,Anchovy,Anemonefish,Angelfish,Angler,Angler catfish,Anglerfish,Antarctic cod,Antarctic icefish,Antenna codlet,Arapaima,Archerfish,Arctic char,Armored gurnard,Armored searobin,Armorhead,Armorhead catfish,Armoured catfish,Arowana,Arrowtooth eel,Asian carps,Asiatic glassfish,Atka mackerel,Atlantic bonito,Atlantic cod,Atlantic herring,Atlantic salmon,Atlantic sharpnose shark,Atlantic saury,Atlantic silverside,Australasian salmon,Australian grayling,Australian herring,Australian lungfish,Australian prowfish,Ayu,Baikal oilfish,Bala shark,Ballan wrasse,Bamboo shark,Banded killifish,Bandfish,Banjo,Bangus,Banjo catfish,Barb,Barbel,Barbeled dragonfish,Barbeled houndshark,Barbel-less catfish,Barfish,Barracuda,Barracudina,Barramundi,Barred danio,Barreleye,Basking shark,Bass,Basslet,Batfish,Bat ray,Beachsalmon,Beaked salmon,Beaked sandfish,Beardfish,Beluga sturgeon,Bengal danio,Betta,Bichir,Bicolor goat fish,Bigeye,Bigeye squaretail,Bighead carp,Bigmouth buffalo,Bigscale,Bigscale pomfret,Billfish,Bitterling,Black angelfish,Black bass,Black dragonfish,Blackchin,Blackfin Tuna,Blackfish,Black neon tetra,Blacktip reef shark,Black mackerel,Black scalyfin,Black sea bass,Black scabbardfish,Black swallower,Black tetra,Black triggerfish,Bleak,Blenny,Blind goby,Blind shark,Blobfish,Blowfish,Blue catfish,Blue danio,Blue-redstripe danio,Blue eye trevalla,Bluefin tuna,Bluefish,Bluegill,Blue gourami,Blue shark,Blue triggerfish,Blue whiting,Bluntnose knifefish,Bluntnose minnow,Boafish,Boarfish,Bobtail snipe eel,Bocaccio,Boga,Bombay duck,Bonefish,Bonito,Bonnethead shark,Bonnetmouth,Bonytail,Bonytongue,Bowfin,Boxfish,Bramble shark,Bream,Brill,Bristlemouth,Bristlenose catfish,Broadband dogfish,Bronze corydoras,Brook lamprey,Brook stickleback,Brook trout,Brotula,Brown trout,Buffalo fish,Bullhead,Bullhead shark,Bull shark,Bull trout,Burbot,Bumblebee goby,Buri,Burma danio,Burrowing goby,Butterfish,Butterfly ray,Butterflyfish,California flyingfish,California halibut,Canary rockfish,Candiru,Candlefish,Capelin,Cardinalfish,Cardinal tetra,Carp,Carpetshark,Carpsucker,Catalufa,Catfish,Catla,Cat shark,Cavefish,Celebes rainbowfish,Central mudminnow,Chain pickerel,Channel bass,Channel catfish,Char,Cherry salmon,Chimaera,Chinook salmon,Cherubfish,Chub,Chubsucker,Chum salmon,Cichlid,Cisco,Climbing catfish,Climbing gourami,Climbing perch,Clingfish,Clownfish,Clown loach,Clown triggerfish,Cobbler,Cobia,Cod,Codlet,Codling,Coelacanth,Coffinfish,Coho salmon,Coley,Collared carpetshark,Collared dogfish,Colorado squawfish,Combfish,Combtail gourami,Combtooth blenny,Common carp,Common tunny,Conger eel,Convict blenny,Convict cichlid,Cookie-cutter shark,Coolie loach,Cornetfish,Cowfish,Cownose ray,Cow shark,Crappie,Creek chub,Crestfish,Crevice kelpfish,Croaker,Crocodile icefish,Crocodile shark,Crucian carp,Cuckoo wrasse,Cusk,Cusk-eel,Cutlassfish,Cutthroat eel,Cutthroat trout,Dab,Dace,Daggertooth pike conger,Damselfish,Danio,Darter,Dartfish,Dealfish,Death Valley pupfish,Deep sea eel,Deep sea smelt,Deepwater cardinalfish,Deepwater flathead,Deepwater stingray,Delta smelt,Demoiselle,Denticle herring,Desert pupfish,Devario,Devil ray,Dhufish,Discus,Dogfish,Dogfish shark,Dogteeth tetra,Dojo loach,Dolly Varden trout,Dolphin fish,Dorab wolf-herring,Dorado,Dory,Dottyback,Dragonet,Dragonfish,Dragon goby,Driftfish,Driftwood catfish,Drum,Duckbill,Duckbill eel,Dusky grouper,Dusky shark,Dwarf gourami,Dwarf loach,Eagle ray,Earthworm eel,Eel,Eel cod,Eel-goby,Eelpout,Eeltail catfish,Elasmobranch,Electric catfish,Electric eel,Electric knifefish,Electric ray,Elephant fish,Elephantnose fish,Elver,Ember parrotfish,Emerald catfish,Emperor,Emperor angelfish,Emperor bream,Escolar,Eucla cod,Eulachon,European chub,European eel,European flounder,European minnow,European perch,False brotula,False cat shark,False moray,False trevally,Fangtooth,Fathead sculpin,Featherback,Fierasfer,Fire goby,Filefish,Finback cat shark,Fingerfish,Fire bar danio,Firefish,Flabby whale fish,Flagblenny,Flagfin,Flagfish,Flagtail,Flashlight fish,Flatfish,Flathead,Flathead catfish,Flier,Flounder,Flying gurnard,Flying fish,Footballfish,Forehead brooder,Four-eyed fish,French angelfish,Freshwater eel,Freshwater hatchetfish,Freshwater shark,Frigate mackerel,Frilled shark,Frogfish,Frogmouth catfish,Fusilier fish,Galjoen fish,Ganges shark,Gar,Garden eel,Garibaldi,Garpike,Ghost fish,Ghost flathead,Ghost knifefish,Ghost pipefish,Ghost shark,Ghoul,Giant danio,Giant gourami,Giant sea bass,Gibberfish,Gila trout,Gizzard shad,Glass catfish,Glassfish,Glass knifefish,Glowlight danio,Goatfish,Goblin shark,Goby,Golden dojo,Golden loach,Golden shiner,Golden trout,Goldeye,Goldfish,Gombessa,Goosefish,Gopher rockfish,Gourami,Grass carp,Graveldiver,Grayling,Gray mullet,Gray reef shark,Great white shark,Green swordtail,Greeneye,Greenling,Grenadier,Green spotted puffer,Ground shark,Grouper,Grunion,Grunt,Grunter,Grunt sculpin,Gudgeon,Guitarfish,Gulf menhaden,Gulper eel,Gulper,Gunnel,Guppy,Gurnard,Haddock,Hagfish,Hairtail,Hake,Halfbeak,Halfmoon,Halibut,Halosaur,Hamlet,Hammerhead shark,Hammerjaw,Handfish,Hardhead catfish,Harelip sucker,Hatchetfish,Hawkfish,Herring,Herring smelt,Hickory Shad,Hillstream loach,Hog sucker,Hoki,Horn shark,Horsefish,Houndshark,Huchen,Humuhumunukunukuapua/'a,Hussar,Icefish,Ide,Ilish/Hilsha,Inanga,Inconnu,Jack,Jackfish,Jack Dempsey,Japanese eel,Javelin,Jawfish,Jellynose fish,Jewelfish,Jewel tetra,Jewfish,John Dory,Kafue pike,Kahawai,Kaluga,Kanyu,Kelp perch,Kelpfish,Killifish,King of the herrings,Kingfish,King-of-the-salmon,Kissing gourami,Knifefish,Knifejaw,Koi,Kokanee,Kokopu,Kuhli loach,Labyrinth fish,Ladyfish,Lake chub,Lake trout,Lake whitefish,Lampfish,Lamprey,Lancetfish,Lanternfish,Largemouth bass,Leaffish,Leatherjacket,Lefteye flounder,Lemon shark,Lemon sole,Lemon tetra,Lenok,Leopard danio,Lightfish,Limia,Lined sole,Ling,Ling cod,Lionfish,Livebearer,Lizardfish,Loach,Loach catfish,Loach goby,Loach minnow,Longfin,Longfin dragonfish,Longfin escolar,Longfin smelt,Long-finned char,Long-finned pike,Long-finned sand diver,Longjaw mudsucker,Longneck eel,Longnose chimaera,Longnose dace,Longnose lancetfish,Longnose sucker,Longnose whiptail catfish,Long-whiskered catfish,Loosejaw,Lost River sucker,Louvar,Loweye catfish,Luderick,Luminous hake,Lumpsucker,Lungfish,Mackerel,Mackerel shark,Madtom,Mahi-mahi,Mahseer,Mail-cheeked fish,Mako shark,Mandarinfish,Manefish,Man-of-war fish,Manta ray,Marblefish,Marine hatchetfish,Marlin,Masu salmon,Medaka,Medusafish,Megamouth shark,Menhaden,Merluccid hake,Mexican golden trout,Midshipman fish,Milkfish,Minnow,Minnow of the deep,Modoc sucker,Mojarra,Mola mola,Monkeyface prickleback,Monkfish,Mooneye,Moonfish,Moorish idol,Mora,Moray eel,Morid cod,Morwong,Moses sole,Mosquitofish,Mouthbrooder,Mozambique tilapia,Mrigal,Mud catfish,Mudfish,Mudminnow,Mud minnow,Mudskipper,Mudsucker,Mullet,Mummichog,Murray cod,Muskellunge,Mustache triggerfish,Mustard eel,Naked-back knifefish,Nase,Needlefish,Neon tetra,New World rivuline,New Zealand sand diver,New Zealand smelt,Nibble fish,Noodlefish,North American darter,North American freshwater catfish,North Pacific daggertooth,Northern anchovy,Northern clingfish,Northern lampfish,Northern pike,Northern sea robin,Northern squawfish,Northern stargazer,Notothen,Nurseryfish,Nurse shark,Oarfish,Ocean perch,Ocean sunfish,Oceanic whitetip shark,Oilfish,Oldwife,Old World knifefish,Olive flounder,Opah,Opaleye,Orange roughy,Orangespine unicorn fish,Orangestriped triggerfish,Orbicular batfish,Orbicular velvetfish,Oregon chub,Orfe,Oriental loach,Oscar,Owens pupfish,Pacific albacore,Pacific cod,Pacific hake,Pacific herring,Pacific lamprey,Pacific salmon,Pacific saury,Pacific trout,Pacific viperfish,Paddlefish,Pancake batfish,Panga,Paradise fish,Parasitic catfish,Parore,Parrotfish,Peacock flounder,Peamouth,Pearleye,Pearlfish,Pearl danio,Pearl perch,Pelagic cod,Pelican eel,Pelican gulper,Pencil catfish,Pencilfish,Pencilsmelt,Peppered corydoras,Perch,Peters' elephantnose fish,Pickerel,Pigfish,Pike conger,Pike eel,Pike,Pikeblenny,Pikeperch,Pilchard,Pilot fish,Pineapplefish,Pineconefish,Pink salmon,Píntano,Pipefish,Piranha,Pirarucu,Pirate perch,Plaice,Platy,Platyfish,Pleco,Plownose chimaera,Poacher,Pollyfish,Pollock,Pomfret,Pompano,Pompano dolphinfish,Ponyfish,Popeye catalufa,Porbeagle shark,Porcupinefish,Porgy,Port Jackson shark,Powen,Prickleback,Pricklefish,Prickly shark,Prowfish,Pufferfish,Pumpkinseed,Pupfish,Pygmy sunfish,Queen danio,Queen parrotfish,Queen triggerfish,Quillback,Quillfish,Rabbitfish,Raccoon butterfly fish,Ragfish,Rainbow trout,Rainbowfish,Rasbora,Ratfish,Rattail,Ray,Razorback sucker,Razorfish,Red grouper,Red salmon,Red snapper,Redfin perch,Redfish,Redhorse sucker,Redlip blenny,Redmouth whalefish,Redtooth triggerfish,Red velvetfish,Red whalefish,Reedfish,Reef triggerfish,Remora,Requiem shark,Ribbon eel,Ribbon sawtail fish,Ribbonfish,Rice eel,Ricefish,Ridgehead,Riffle dace,Righteye flounder,Rio Grande perch,River loach,River shark,River stingray,Rivuline,Roach,Roanoke bass,Rock bass,Rock beauty,Rock cod,Rocket danio,Rockfish,Rockling,Rockweed gunnel,Rohu,Ronquil,Roosterfish,Ropefish,Rough scad,Rough sculpin,Roughy,Roundhead,Round herring,Round stingray,Round whitefish,Rudd,Rudderfish,Ruffe,Russian sturgeon,Sábalo,Sabertooth,Saber-toothed blenny,Sabertooth fish,Sablefish,Sacramento blackfish,Sacramento splittail,Sailfin silverside,Sailfish,Salamanderfish,Salmon,Salmon shark,Sandbar shark,Sandburrower,Sand dab,Sand diver,Sand eel,Sandfish,Sand goby,Sand knifefish,Sand lance,Sandperch,Sandroller,Sand stargazer,Sand tiger,Sand tilefish,Sandbar shark,Sarcastic fringehead,Sardine,Sargassum fish,Sauger,Saury,Sawfish,Saw shark,Sawtooth eel,Scabbard fish,Scaly dragonfish,Scat,Scissortail rasbora,Scorpionfish,Sculpin,Scup,Sea bass,Sea bream,Sea catfish,Sea chub,Sea devil,Sea dragon,Sea lamprey,Sea raven,Sea snail,Sea toad,Seahorse,Seamoth,Searobin,Sevan trout,Sergeant major,Shad,Shark,Sharksucker,Sharpnose puffer,Sheatfish,Sheepshead,Sheepshead minnow,Shiner,Shortnose chimaera,Shortnose sucker,Shovelnose sturgeon,Shrimpfish,Siamese fighting fish,Sillago,Silver carp,Silver dollar,Silver dory,Silver hake,Silverside,Silvertip tetra,Sind danio,Sixgill ray,Sixgill shark,Skate,Skilfish,Skipjack tuna,Slender mola,Slender snipe eel,Sleeper,Sleeper shark,Slickhead,Slimehead,Slimy mackerel,Slimy sculpin,Slipmouth,Smalleye squaretail,Smalltooth sawfish,Smelt,Smelt-whiting,Smooth dogfish,Snailfish,Snake eel,Snakehead,Snake mackerel,Snapper,Snipe eel,Snipefish,Snook,Snubnose eel,Snubnose parasitic eel,Sockeye salmon,Soldierfish,Sole,South American darter,South American lungfish,Southern Dolly Varden,Southern flounder,Southern hake,Southern sandfish,Southern smelt,Spadefish,Spaghetti eel,Spanish mackerel,Spearfish,Speckled trout,Spiderfish,Spikefish,Spinefoot,Spiny basslet,Spiny dogfish,Spiny dwarf catfish,Spiny eel,Spinyfin,Splitfin,Spookfish,Spotted climbing perch,Spotted danio,Spottail pinfish,Sprat,Springfish,Squarehead catfish,Squaretail,Squawfish,Squeaker,Squirrelfish,Staghorn sculpin,Stargazer,Starry flounder,Steelhead,Stickleback,Stingfish,Stingray,Stonecat,Stonefish,Stoneroller minnow,Stream catfish,Striped bass,Striped burrfish,Sturgeon,Sucker,Suckermouth armored catfish,Summer flounder,Sundaland noodlefish,Sunfish,Surf sardine,Surfperch,Surgeonfish,Swallower,Swamp-eel,Swampfish,Sweeper,Swordfish,Swordtail,Tadpole cod,Tadpole fish,Tailor,Taimen,Tang,Tapetail,Tarpon,Tarwhine,Telescopefish,Temperate bass,Temperate ocean-bass,Temperate perch,Tench,Tenpounder,Tenuis,Tetra,Thorny catfish,Thornfish,Threadfin,Threadfin bream,Thread-tail,Three spot gourami,Threespine stickleback,Three-toothed puffer,Thresher shark,Tidewater goby,Tiger barb,Tigerperch,Tiger shark,Tiger shovelnose catfish,Tilapia,Tilefish,Titan triggerfish,Toadfish,Tommy ruff,Tompot blenny,Tonguefish,Tope,Topminnow,Torpedo,Torrent catfish,Torrent fish,Trahira,Treefish,Trevally,Triggerfish,Triplefin blenny,Triplespine,Tripletail,Tripod fish,Trout,Trout cod,Trout-perch,Trumpeter,Trumpetfish,Trunkfish,Tubeblenny,Tube-eye,Tube-snout,Tubeshoulder,Tui chub,Tuna,Turbot,Two spotted goby,Uaru,Unicorn fish,Upside-down catfish,Vanjaram,Velvet belly lanternshark,Velvet catfish,Velvetfish,Vendace,Vermilion snapper,Vimba,Viperfish,Wahoo,Walking catfish,Wallago,Walleye,Walleye pollock,Walu,Warmouth,Warty angler,Waryfish,Waspfish,Weasel shark,Weatherfish,Weever,Weeverfish,Wels catfish,Whale catfish,Whalefish,Whale shark,Whiff,Whitebait,White croaker,Whitefish,White marlin,White shark,Whitetip reef shark,Whiting,Wobbegong,Wolf-eel,Wolffish,Wolf-herring,Worm eel,Wormfish,Wrasse,Wrymouth,X-ray tetra,Yellow-and-black triplefin,Yellowback fusilier,Yellowbanded perch,Yellow bass,Yellowedge grouper,Yellow-edged moray,Yellow-eye mullet,Yellowhead jawfish,Yellowfin croaker,Yellowfin cutthroat trout,Yellowfin grouper,Yellowfin tuna,Yellowfin pike,Yellowfin surgeonfish,Yellowfin tuna,Yellow jack,Yellowmargin triggerfish,Yellow moray,Yellow perch,Yellowtail,Yellowtail amberjack,Yellowtail barracuda,Yellowtail clownfish,Yellowtail horse mackerel,Yellowtail kingfish,Yellowtail snapper,Yellow tang,Yellow weaver,Yellowtail catfish,Zander,Zebra bullhead shark,Zebra danio,Zebrafish,Zebra lionfish,Zebra loach,Zebra oto,Zebra pleco,Zebra shark,Zebra tilapia,Zebra turkeyfish,Ziege,Zingel]
 
 
-async def rarity(userLoc, loc):
+
+async def rarity(userLoc, loc, rc):
     available = locations[userLoc]["population"]
     res = -1
     depth = await locDepth(loc)
+    rarity = random.uniform(rc, 1)
+    if (userLoc == 0):
+        if (rarity <= .75):
+            res = 1
+        elif (rarity <= .9):
+            res = 4
+        else:
+            res = 18
+    elif (userLoc == 1):
+        if (rarity <= .3):
+            res = 1
+        elif (rarity <= .55):
+            res = 11
+        elif (rarity <= .75):
+            res = 12
+        elif (rarity <= .82):
+            res = 6
+        elif (rarity <= .87):
+            res = 13
+        elif (rarity <= .9):
+            res = 14
+        elif (rarity <= .95):
+            res = 18
+        elif (rarity <= .98):
+            res = 16
+        else:
+            res = 8
+    elif (userLoc == 2):
+        if (rarity <= .3):
+            res = 1
+        elif (rarity <= .55):
+            res = 2
+        elif (rarity <= .75):
+            res = 3
+        elif (rarity <= .80):
+            res = 4
+        elif (rarity <= .84):
+            res = 6
+        elif (rarity <= .87):
+            res = 5
+        elif (rarity <= .9):
+            res = 20
+        elif (rarity <= .95):
+            res = 8
+        elif (rarity <= .98):
+            res = 7
+        else:
+            res = 9
+    elif (userLoc == 3):
+        if (rarity <= .22):
+            res = 1
+        elif (rarity <= .39):
+            res = 11
+        elif (rarity <= .52):
+            res = 12
+        elif (rarity <= .62):
+            res = 2
+        elif (rarity <= .69):
+            res = 3
+        elif (rarity <= .75):
+            res = 19
+        elif (rarity <= .79):
+            res = 4
+        elif (rarity <= .81):
+            res = 6
+        elif (rarity <= .83):
+            res = 13
+        elif (rarity <= .86):
+            res = 14
+        elif (rarity <= .88):
+            res = 5
+        elif (rarity <= .9):
+            res = 20
+        elif (rarity <= .93):
+            res = 16
+        elif (rarity <= .96):
+            res = 8
+        elif (rarity <= .98):
+            res = 7
+        elif (rarity <= .99):
+            res = 9
+        else:
+            res = 15
     while (res == -1):
-        rarity = random.random()
         if (rarity < .75):
             res =  cfArS[random.randint(0,len(available["cAr"])-1)]
         elif (rarity < .95):
@@ -114,18 +200,7 @@ async def locDepth(location):
     return dpi
 
 async def value(rarity, quality, foreign, prep):
-    if rarity in cfArS:
-        rarity = 1
-    elif rarity in ufArS:
-        rarity = 2
-    elif rarity in rfArS:
-        rarity = 3
-    else:
-        rarity = 4
-    if (foreign):
-        return round(3 + rarity*5 + quality*5 + prep) 
-    else:
-        return round(rarity*5 + quality*5 + prep)
+    return cookF.value(rarity, quality, foreign, prep)
     
 async def qualify(quality):
     if (quality == 1):
@@ -136,17 +211,6 @@ async def qualify(quality):
         return "decent"
     else:
         return "bad"
-
-async def satisfaction(r, q, p):
-    if r in cfArS:
-        r = 1
-    elif r in ufArS:
-        r = 2
-    elif r in rfArS:
-        r = 3
-    else:
-        r = 4
-    return r+3*q+random.randint(0,2)+p*2
 
 async def createProfile(userID):
     users[f'{userID}']['prof'] = {
@@ -320,15 +384,13 @@ async def fish(ctx: discord.Interaction):
             await createProfile(ctx.user.id)
         users[f'{ctx.user.id}']['prof']['fishTime'] = users[f'{ctx.user.id}']['prof']['fishTime'] + users[f'{ctx.user.id}']["lastDur"]
         totVal = 0
-        numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/4))
+        numCaught = random.randint(0,math.ceil(userInfo["lastDur"]/3/userInfo["equipment"]["fishEq"]["quality"]))
         loc = explore(ctx.user.id)
         if numCaught == 0:
             numCaught = random.randint(0,1)
+        numCaught = numCaught + random.triangular(0, users[f'{ctx.user.id}']['fishEq']["ef"], users[f'{ctx.user.id}']['fishEq']["efc"])
         r = 0
         q = 0
-        snapped = '!'
-        released = ''
-        rCount = 0
         fdex = users[f'{ctx.user.id}']['fishlog']
         for i in range(numCaught):
             if userInfo.get("location") == "-1":
@@ -337,7 +399,7 @@ async def fish(ctx: discord.Interaction):
                 totVal = 0
                 w = 0.01
             else:
-                fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"))
+                fish = await pullFish(userInfo.get("pos"), loc, userInfo.get("location"), ctx.user.id)
                 dpi = await locDepth(loc)
                 if (mp[loc[0]][loc[1]] == "b"):
                     if (users[f"{ctx.user.id}"].get("markets") != None):
@@ -345,36 +407,25 @@ async def fish(ctx: discord.Interaction):
                     else:
                         users[f"{ctx.user.id}"]["markets"] = [loc]
                     await ctx.channel.send(f"{ctx.user.display_name}, you just discovered a new market! Use the /markets command for more information!")
-                if (fish.get("weight") <= maxWeight*userInfo["equipment"]["fishEq"]["quality"] and fish.get("weight") > fishWeights[fish.get("rarity")-1]*(dpi**.4)*.85):
-                    q = fish.get("quality")
-                    r = fish.get("rarity")
-                    w = fish.get("weight")
-                    if leaderboards[f"{fishNames[r-1]}"]["weight"] < w:
-                        moneys = users[f'{ctx.user.id}']['money']
-                        bonus = 10
-                        users[f'{ctx.user.id}']['money'] = moneys + bonus
-                        leaderboards[f"{fishNames[r-1]}"] = fish
-                        await ctx.channel.send(f'{ctx.user.display_name}, you have found the biggest {fishNames[r-1]} yet! The Siltora Club has rewarded you a 10 perle prize, and you have recieved a place on the leaderboard!')
-                    users[f'{ctx.user.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
-                    fdex[fishNames[r-1]] = fdex[fishNames[r-1]] + 1
-                    totVal += await value(r,q,False,0)
-                elif (fish.get("weight") <= fishWeights[fish.get("rarity")-1]*.85):
-                    rCount = rCount + 1
-                    released = f" you had to release {rCount} young fish, but"
-                    numCaught = numCaught-1
-                else:
-                    snapped = ' before your line snapped.'
-                    numCaught = numCaught-1
+                q = fish.get("quality")
+                r = fish.get("rarity")
+                w = fish.get("weight")
+                if leaderboards[f"{fishNames[r-1]}"]["weight"] < w:
+                    moneys = users[f'{ctx.user.id}']['money']
+                    bonus = 10
+                    users[f'{ctx.user.id}']['money'] = moneys + bonus
+                    leaderboards[f"{fishNames[r-1]}"] = fish
+                    await ctx.channel.send(f'{ctx.user.display_name}, you have found the biggest {fishNames[r-1]} yet! The Siltora Club has rewarded you a 10 perle prize, and you have recieved a place on the leaderboard!')
+                users[f'{ctx.user.id}']["inv"][f'{len(userInfo.get("inv"))}'] = fish
+                fdex[fishNames[r-1]] = fdex[fishNames[r-1]] + 1
+                totVal += await value(r,q,False,0)
         users[f'{ctx.user.id}']['fishlog'] = fdex
         users[f'{ctx.user.id}']["isFishing"] = 0
-        outMsg = f'{ctx.user.display_name},{released} your fishing trip yielded {numCaught} fish{snapped} Their total value is {totVal} perles! :fishing_pole_and_fish:'
+        outMsg = f'{ctx.user.display_name}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
         if numCaught <= 0:
-            if (rCount == 0):
-                outMsg = f'{ctx.user.display_name}, your line snapped before you could catch any fish! Unlucky!'
-            else:
-                outMsg = 'You had to release all of the fish you caught because they were too young. Unlucky!' 
+            outMsg = f'{ctx.user.display_name}, your line snapped before you could catch any fish! Unlucky!'
         elif numCaught == 1:
-            outMsg = f'{ctx.user.display_name},{released} you caught a {rarityAr[r-1]}{snapped} It weighs {round(w,2)} lbs and is worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.user.display_name}, you caught a {rarityAr[r-1]}! It weighs {round(w,2)} lbs and is worth {totVal} perles! :fishing_pole_and_fish:'
         await ctx.response.send_message(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.response.send_message(f'{ctx.user.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
@@ -419,40 +470,7 @@ async def trade(ctx: discord.Interaction, slot:int):
 
 @bot.tree.command(description="Prepare your fish with seasonings or with accumulated skill")
 async def prepare(ctx: discord.Interaction, slot:int=1):
-    if (slot>len(users.get(f'{ctx.user.id}').get('inv'))):
-        await ctx.response.send_message('Invalid inventory slot')
-    elif (users[f'{ctx.user.id}']['inv'][f'{slot-1}']['prepBonus'] == 0):
-        slot -= 1
-        fish = users.get(f'{ctx.user.id}').get('inv').get(f'{slot}')
-        q = fish.get("quality")
-        r = fish.get("rarity")
-        f = fish.get("from") != users[f'{ctx.user.id}']["pos"]
-        if r in cfArS:
-            pr = 1
-        elif r in ufArS:
-            pr = 2
-        elif r in rfArS:
-            pr = 3
-        else:
-            pr = 4
-        oVal = await value(r,q,f,0)
-        skill = users.get(f'{ctx.user.id}').get(f'{"reputation"}')/100
-        if (3**(pr-1) < skill): skill = 3**(pr-1)
-        p = .1
-        p += 2 if (users[f'{ctx.user.id}']['equipment'].get('stove') != None) else 0
-        sS = ''
-        if (users[f'{ctx.user.id}']['equipment']['seasoning'] > 0):
-            p += 6
-            sLeft = users[f'{ctx.user.id}']['equipment']['seasoning'] - 1
-            users[f'{ctx.user.id}']['equipment']['seasoning'] = sLeft
-            sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
-        users[f'{ctx.user.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
-        nVal = await value(r,q,f,(p+skill))
-        await ctx.response.send_message(f'{ctx.user.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
-    else:
-        await ctx.response.send_message('This fish has already been prepared!')
+    cookF.prepare(ctx, slot)
 
 @bot.tree.command(guild=discord.Object(901489176384507914), description="Developer Command")
 async def special(ctx: discord.Interaction, name:str, num:int):
@@ -566,38 +584,7 @@ async def checkfish(ctx: discord.Interaction, slot: int):
 
 @bot.tree.command(description="Cook a fish from your inventory")
 async def cook(ctx: discord.Interaction, slot:int=1):
-    if (slot <= len(users[f'{ctx.user.id}']['inv'])):
-        fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
-        q = fish['quality']
-        r = fish['rarity']
-        f = fish['from'] != users[f'{ctx.user.id}']["pos"]
-        p = fish['prepBonus']
-        yum = await satisfaction(r,q,p)
-        if yum > 12: yum = 12
-        if yum < 3:
-            users[f'{ctx.user.id}']['reputation'] -= 3-yum
-            om = f'{ctx.user.display_name}, your customer hated your fish!'
-        elif yum > 6:
-            users[f'{ctx.user.id}']['reputation'] += yum-6
-            om = f'{ctx.user.display_name}, your customer liked your fish!'
-        else:
-            om = f'{ctx.user.display_name}, your customer thought that your fish was alright'
-        users[f'{ctx.user.id}']['money'] += await value(r,q,f,p)
-        moneys = users[f'{ctx.user.id}']['money']
-        i = 0
-        j = 0
-        newInv = {}
-        while i < len(users[f'{ctx.user.id}']['inv']):
-            if i != slot-1:
-                newInv[f'{j}'] = users[f'{ctx.user.id}']['inv'][f'{i}']
-                j += 1
-            i += 1
-        users[f'{ctx.user.id}']['inv'] = newInv
-        await ctx.response.send_message(f'{om}\nYou have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
-    else:
-        await ctx.response.send_message('Invalid inventory slot')
+    cookF.cook(ctx, slot)
 
 class aqVw(ui.View):
     def __init__(self) -> None:
@@ -806,9 +793,10 @@ class stVw(ui.View):
         boats = fishEq.get("boats")
         aquariums = equipment.get("aquariums")
         j = 1
+        rdDesc = ["This rod also increases your fish's rarity and weight by 5%!", "With this rod, you have a 5% chance to catch two more fish, and increases your fish's weight by 1%!", "You'll get a 3% rarity boost with this rod alongside a 10% chance to catch one more fish!"]
         for i in range(3):
             rod = rods.get(f'{i+1}')
-            store_embed.add_field(name = f'{j}: {rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
+            store_embed.add_field(name = f'{j}: {rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! {rdDesc[i]} :oyster:', inline = False)
             j=j+1    
         for i in range(3):
             boat = boats.get(f'{i+1}')
@@ -818,9 +806,6 @@ class stVw(ui.View):
             aquarium = aquariums.get(f'{i+1}')
             store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:', inline=False)
             j=j+1
-        store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
-        j=j+1
-        store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
         await ctx.response.send_message(embed=store_embed, view=eqVw())
     @ui.button(label="License", style=discord.ButtonStyle.green)
     async def lics(self, ctx: discord.Interaction, button: ui.button):
@@ -842,6 +827,9 @@ class stVw(ui.View):
         # else:
         #     await ctx.response.send_message(f"{ctx.user.display_name}, you currently have the highest level license available!")
         await ctx.response.send_message("Licenses are currently undergoing a rework.")
+    @ui.button(label="Cooking EQ", style=discord.ButtonStyle.green)
+    async def chefsp(self, ctx: discord.Interaction, button: ui.button):
+        cook.chef(self, ctx, button)
 
 class mkVw(ui.View):
     def __init__(self) -> None:
@@ -893,7 +881,7 @@ class FModal(ui.Modal, title='Market Purchase'):
                         moneys = users[f'{ctx.user.id}']["money"]
                         userInv = users[f'{ctx.user.id}']['inv'] 
                         users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
-                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'])
+                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'], ctx.user.id)
                         await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
                         with open('users.json', 'w') as outfile:
                             json.dump(users, outfile)
@@ -917,41 +905,48 @@ class EModal(ui.Modal, title="Equipment Purchase"):
             if (slot < len(eqCost)+1):
                 cost = eqCost[slot-1]
                 if (users[f'{ctx.user.id}']["money"] >= cost):
-                    if (slot > 10):
-                        await ctx.response.send_message('These items have not yet been implemented fully. We apologize')
-                    else:
-                        await ctx.channel.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
-                        users[f'{ctx.user.id}']["money"] -= cost
-                        moneys = users[f'{ctx.user.id}']["money"]
-                        userEq = users[f'{ctx.user.id}']['equipment']
-                        fishEq = equipment.get("fishEq")
-                        rods = fishEq.get("fishRods")
-                        boats = fishEq.get("boats")
-                        aquariums = equipment.get("aquariums")
-                        if (slot > 9):
-                            if (slot == 10):
-                                userEq['seasoning'] = userEq['seasoning'] + 50
-                        elif (slot > 6):
-                            if (userEq.get("aquarium") != None):
-                                if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
+                    await ctx.channel.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
+                    users[f'{ctx.user.id}']["money"] -= cost
+                    moneys = users[f'{ctx.user.id}']["money"]
+                    userEq = users[f'{ctx.user.id}']['equipment']
+                    fishEq = equipment.get("fishEq")
+                    rods = fishEq.get("fishRods")
+                    boats = fishEq.get("boats")
+                    aquariums = equipment.get("aquariums")
+                    if (slot > 6):
+                        if (userEq.get("aquarium") != None):
+                            if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
+                                users[f'{ctx.user.id}']["money"] += cost
+                                await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")      
+                            else:
+                                tempAq = aquariums[f'{slot-6}']
+                                if (users[f'{ctx.user.id}']["owned"][tempAq["name"]]):
                                     users[f'{ctx.user.id}']["money"] += cost
-                                    await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")      
+                                    await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
                                 else:
                                     tempAq = aquariums[f'{slot-6}']
                                     tempAq["contents"] = userEq["aquarium"]["contents"]
                                     tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
                                     tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
                                     userEq['aquarium'] = tempAq
-                            else:
-                                userEq['aquarium'] = aquariums[f'{slot-6}']
-                        elif (slot > 3):
+                        else:
+                            userEq['aquarium'] = aquariums[f'{slot-6}']
+                    elif (slot > 3):
+                        if (users[f'{ctx.user.id}']["owned"][boats[f'{slot-3}']["name"]]):
+                            users[f'{ctx.user.id}']["money"] += cost
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
+                        else:
                             userEq['boat'] = boats[f'{slot-3}']
-                        else: 
+                    else: 
+                        if (users[f'{ctx.user.id}']["owned"][rods[f'{slot}']["name"]]):
+                            users[f'{ctx.user.id}']["money"] += cost
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
+                        else:
                             userEq['fishEq'] = rods[f'{slot}']
-                        users[f'{ctx.user.id}']['equipment'] = userEq
-                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
-                        with open('users.json', 'w') as outfile:
-                            json.dump(users, outfile)
+                    users[f'{ctx.user.id}']['equipment'] = userEq
+                    await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
+                    with open('users.json', 'w') as outfile:
+                        json.dump(users, outfile)
                 else:
                     await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
             else:
