@@ -184,26 +184,17 @@ class mkVw(ui.View):
         await ctx.response.send_modal(FModal())
 
 #Your main store embed
-async def store(self, ctx: discord.Interaction, button: ui.button):
-    store_embed = discord.Embed (title = "Jerry's Bait Shop (You know the place)", type = "rich")
-    fishEq = equipment.get("fishEq")
-    rods = fishEq.get("fishRods")
-    boats = fishEq.get("boats")
-    aquariums = equipment.get("aquariums")
-    j = 1
-    for i in range(3):
-        rod = rods.get(f'{i+1}')
-        store_embed.add_field(name = f'{j}: {rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
-        j=j+1    
-    for i in range(3):
-        boat = boats.get(f'{i+1}')
-        store_embed.add_field(name = f'{j}: {boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
-        j=j+1
-    for i in range(3):
-        aquarium = aquariums.get(f'{i+1}')
-        store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:', inline=False)
-        j=j+1
-    store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
-    j=j+1
-    store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
-    await ctx.response.send_message(embed=store_embed, view=mkVw())
+async def mrkt(self, ctx: discord.Interaction, button: ui.button):
+        market_embed = discord.Embed (title = "The Net, for fish", type = 'rich')
+        page = ""
+        for i in range(10):
+            marketSlot = random.randint(0,99999)
+            marketFish = market.get(f"slot{marketSlot}")
+            while (marketFish.get("from") == users.get(f'{ctx.user.id}').get("pos") or marketFish.get("from") == -2):
+                marketSlot = random.randint(0,99999)
+                marketFish = market.get(f"slot{marketSlot}")
+            prep = "prepared" if (marketFish.get("prepBonus") > 0) else "Not prepared"
+            page += f'**Slot**: {marketSlot}, Origin: {marketFish.get("from")}, Quality: {await qualify(marketFish.get("quality"))}, Type: {rarityAr[marketFish.get("rarity")-1]}. {prep}. \n'
+        market_embed.add_field(name="The one stop shop for bass and cod! (and other things maybe)", value = f'{page}', inline = False)
+        market_embed.set_thumbnail(url="https://i.etsystatic.com/15020412/r/il/455abc/2328156575/il_1588xN.2328156575_4m7l.jpg")
+        await ctx.response.send_message(embed=market_embed, view=mkVw())
