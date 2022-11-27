@@ -497,8 +497,8 @@ async def inventory(ctx: discord.Interaction):
     evf = f' and **{ef}** event fish!' if ef > 0 else ''
     bt = (fe['boat']['name']).lower()
     rd = (fe['fishEq']['name']).lower()
-    s = fe['seasoning']
-    sS = f'\nYou have enough seasoning for {s} more servings!' if (s > 0) else ''
+    #s = fe['seasoning']
+    #sS = f'\nYou have enough seasoning for {s} more servings!' if (s > 0) else ''
     in_embed = discord.Embed(
         title = str(f'{ctx.user.display_name}\'s Inventory'),
         type="rich",
@@ -507,7 +507,7 @@ async def inventory(ctx: discord.Interaction):
     in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == cfArS[0]])}\nPike: {len([f for f in wf if f == cfArS[1]])}\nGrunt: {len([f for f in wf if f == cfArS[2]])}\nAngelfish: {len([f for f in wf if f == cfArS[3]])}\nGuppy: {len([f for f in wf if f == cfArS[4]])}")
     in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == ufArS[0]])}\nMarlin: {len([f for f in wf if f == ufArS[1]])}\nTang: {len([f for f in wf if f == ufArS[2]])}\nMudfish: {len([f for f in wf if f == ufArS[3]])}\nTrout: {len([f for f in wf if f == ufArS[4]])}")
     in_embed.add_field(name=f"Rare Fish: {rf}", value=f"Snapper: {len([f for f in wf if f == rfArS[0]])}\nTetra: {len([f for f in wf if f == rfArS[1]])}\nFirefish: {len([f for f in wf if f == rfArS[2]])}\nParrotfish: {len([f for f in wf if f == rfArS[3]])}\nCatfish: {len([f for f in wf if f == rfArS[4]])}")
-    in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!{sS}")
+    in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!")
     await ctx.response.send_message(embed=in_embed)
 
 @bot.tree.command(description="Detailed fish storage information")
