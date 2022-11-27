@@ -96,11 +96,11 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         if (users[f'{ctx.user.id}']['equipment'].get('stove') != None):
             p += 2
         sS = ''
-        if (users[f'{ctx.user.id}']['equipment']['seasoning'] > 0):
-            p += 6
-            sLeft = users[f'{ctx.user.id}']['equipment']['seasoning'] - 1
-            users[f'{ctx.user.id}']['equipment']['seasoning'] = sLeft
-            sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
+        #if (users[f'{ctx.user.id}']['equipment']['seasoning'] > 0):
+        #    p += 6
+        #    sLeft = users[f'{ctx.user.id}']['equipment']['seasoning'] - 1
+        #    users[f'{ctx.user.id}']['equipment']['seasoning'] = sLeft
+        #    sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
         users[f'{ctx.user.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
         nVal = await value(r,q,f,(p+skill))
         await ctx.response.send_message(f'{ctx.user.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
