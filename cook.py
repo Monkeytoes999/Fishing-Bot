@@ -61,7 +61,7 @@ async def satisfaction(r, q, p):
     return r+3*q+random.randint(0,2)+p*2
 
 # Quality function
-async def getRarityLevel(rarity) {
+async def getRarityLevel(rarity):
     out = 0
     if rarity in cfArS:
         out = 1
@@ -72,7 +72,6 @@ async def getRarityLevel(rarity) {
     else
         out = 4
     return out
-}
 
 # Prepare
 async def prepare(ctx: discord.Interaction, slot:int=1):
