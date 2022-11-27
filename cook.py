@@ -33,6 +33,31 @@ cfArS = [1, 2, 3, 11, 12]
 ufArS = [4, 5, 6, 13, 14]
 rfArS = [7, 8, 9, 15, 16]
 
+async def value(rarity, quality, foreign, prep):
+    if rarity in cfArS:
+        rarity = 1
+    elif rarity in ufArS:
+        rarity = 2
+    elif rarity in rfArS:
+        rarity = 3
+    else:
+        rarity = 4
+    if (foreign):
+        return round(3 + rarity*5 + quality*5 + prep) 
+    else:
+        return round(rarity*5 + quality*5 + prep)
+
+async def satisfaction(r, q, p):
+    if r in cfArS:
+        r = 1
+    elif r in ufArS:
+        r = 2
+    elif r in rfArS:
+        r = 3
+    else:
+        r = 4
+    return r+3*q+random.randint(0,2)+p*2
+
 # Prepare
 async def prepare(ctx: discord.Interaction, slot:int=1):
     if (slot > len(users.get(f'{ctx.user.id}').get('inv'))):
@@ -56,7 +81,7 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         if (3**(pr-1) < skill): 
             skill = 3**(pr-1)
         p = 0.1
-        if (users[f'{ctx.user.id}']['equipment'].get('stove') != None)
+        if (users[f'{ctx.user.id}']['equipment'].get('stove') != None):
             p += 2
         sS = ''
         if (users[f'{ctx.user.id}']['equipment']['seasoning'] > 0):
