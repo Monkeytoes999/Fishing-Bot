@@ -87,7 +87,7 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         q = fish.get("quality")
         r = fish.get("rarity")
         f = fish.get("from") != users[f'{ctx.user.id}']["pos"]
-        pr = getRarityLevel(r)
+        pr = await getRarityLevel(r)
         oVal = await value(r, q, f, 0)
         skill = users.get(f'{ctx.user.id}').get(f'{"reputation"}')/100
         if (3**(pr - 1) < skill):
