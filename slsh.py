@@ -185,7 +185,6 @@ async def rarity(userLoc, loc, rc):
             res = 9
         else:
             res = 15
-    print(res)
     return res
         
 async def locDepth(location):
@@ -387,6 +386,8 @@ async def fish(ctx: discord.Interaction):
         if numCaught == 0:
             numCaught = random.randint(0,1)
         numCaught = numCaught + random.triangular(0, users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"])
+        print(numCaught)
+        print(users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"])
         r = 0
         q = 0
         fdex = users[f'{ctx.user.id}']['fishlog']
