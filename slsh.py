@@ -204,7 +204,7 @@ async def locDepth(location):
     return dpi
 
 async def value(rarity, quality, foreign, prep):
-    return cookF.value(rarity, quality, foreign, prep)
+    return await cookF.value(rarity, quality, foreign, prep)
     
 async def qualify(quality):
     if (quality == 1):
