@@ -1,3 +1,4 @@
+# Import statements
 from importlib.resources import contents
 from typing import Literal
 import discord
@@ -8,6 +9,7 @@ import time
 import math
 import png
 
+# Get user data
 file = open('users.json',)
 users = json.load(file)
 mFile = open('market.json',)
@@ -19,8 +21,10 @@ locations = json.load(lcFile)
 ldbFile = open('leaderboards.json')
 leaderboards = json.load(ldbFile)
 
+# Version number
 beaver = "0.0.0.1"
 
+# Fish data
 rarityAr = ['common bass','common pike','common grunt','common\'t cod','common\'t marlin','common\'t tang','rare snapper','rare tetra','rare firefish', 'bonefish', 'common angelfish', 'common guppy', 'common\'t mudfish', 'common\'t trout', 'rare parrotfish', 'rare catfish', 'rubber ducky']
 rarityGroups = ['common', 'common', 'common', 'commont', 'commont', 'commont', 'rare', 'rare', 'rare', 'event', 'common', 'common', 'commont', 'commont', 'rare', 'rare', 'novelty']
 fishNames = ['bass', 'pike', 'grunt', 'cod', 'marlin', 'tang', 'snapper', 'tetra', 'firefish', 'bonefish', 'angelfish', 'guppy', 'mudfish', 'trout', 'parrotfish', 'catfish', 'rubber ducky']
@@ -29,8 +33,9 @@ cfArS = [1, 2, 3, 11, 12]
 ufArS = [4, 5, 6, 13, 14]
 rfArS = [7, 8, 9, 15, 16]
 
+# Prepare
 async def prepare(ctx: discord.Interaction, slot:int=1):
-    if (slot>len(users.get(f'{ctx.user.id}').get('inv'))):
+    if (slot > len(users.get(f'{ctx.user.id}').get('inv'))):
         await ctx.response.send_message('Invalid inventory slot')
     elif (users[f'{ctx.user.id}']['inv'][f'{slot-1}']['prepBonus'] == 0):
         slot -= 1
@@ -50,8 +55,9 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         skill = users.get(f'{ctx.user.id}').get(f'{"reputation"}')/100
         if (3**(pr-1) < skill): 
             skill = 3**(pr-1)
-        p = .1
-        p += 2 if (users[f'{ctx.user.id}']['equipment'].get('stove') != None) else 0
+        p = 0.1
+        if (users[f'{ctx.user.id}']['equipment'].get('stove') != None)
+            p += 2
         sS = ''
         if (users[f'{ctx.user.id}']['equipment']['seasoning'] > 0):
             p += 6
@@ -66,6 +72,7 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
     else:
         await ctx.response.send_message('This fish has already been prepared!')
 
+# Cook
 async def cook(ctx: discord.Interaction, slot:int=1):
     if (slot <= len(users[f'{ctx.user.id}']['inv'])):
         fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
