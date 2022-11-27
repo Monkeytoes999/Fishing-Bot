@@ -139,3 +139,71 @@ async def cook(ctx: discord.Interaction, slot:int=1):
             json.dump(users, outfile)
     else:
         await ctx.response.send_message('Invalid inventory slot')
+
+
+#What happens when the user clicks on the button (on_submit is what happens when they submit the popup)
+class FModal(ui.Modal, title='Market Purchase'):
+    slot = ui.TextInput(label="Market Slot Number")
+    async def on_submit(self, ctx: discord.Interaction):
+        try:
+            slot = int(f'{self.slot}')
+            if (slot >= 0 and slot <= 99999):
+                marketFish = market.get(f'slot{slot}')
+                q = marketFish["quality"]
+                r = marketFish["rarity"]
+                f = marketFish["from"] != users[f'{ctx.user.id}']["pos"]
+                if (f):
+                    p = marketFish["prepBonus"]
+                    cost = await value(r,q,False,p)
+                    if (users[f'{ctx.user.id}']["money"] >= cost):
+                        users[f'{ctx.user.id}']["money"] -= cost
+                        moneys = users[f'{ctx.user.id}']["money"]
+                        userInv = users[f'{ctx.user.id}']['inv'] 
+                        users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
+                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'])
+                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
+                        with open('users.json', 'w') as outfile:
+                            json.dump(users, outfile)
+                        with open('market.json', 'w') as outfile:
+                            json.dump(market, outfile)
+                    else:
+                        await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
+                else:
+                    await ctx.response.send_message(f"{ctx.user.display_name}, this was originally your fish! You can't purchase it again.")
+            else:
+                await ctx.response.send_message("This is not a valid slot.")
+        except:
+            await ctx.response.send_message("This is not a valid slot.")
+
+#Basically just what the button says under the store embed
+class mkVw(ui.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+    @ui.button(label="Make a purchase", style=discord.ButtonStyle.green)
+    async def mktP(self, ctx: discord.Interaction, button: ui.button):
+        await ctx.response.send_modal(FModal())
+
+#Your main store embed
+async def store(self, ctx: discord.Interaction, button: ui.button):
+    store_embed = discord.Embed (title = "Jerry's Bait Shop (You know the place)", type = "rich")
+    fishEq = equipment.get("fishEq")
+    rods = fishEq.get("fishRods")
+    boats = fishEq.get("boats")
+    aquariums = equipment.get("aquariums")
+    j = 1
+    for i in range(3):
+        rod = rods.get(f'{i+1}')
+        store_embed.add_field(name = f'{j}: {rod["name"]}', value = f'This rod fishes at {int(rod["quality"]*20)} fish per minute and goes for {rod["price"]} pearles! :oyster:', inline = False)
+        j=j+1    
+    for i in range(3):
+        boat = boats.get(f'{i+1}')
+        store_embed.add_field(name = f'{j}: {boat["name"]}', value = f'This boat lets you fish for {boat["dur"]} seconds at a time and goes for {boat["price"]} pearles! :person_rowing_boat:', inline = False)
+        j=j+1
+    for i in range(3):
+        aquarium = aquariums.get(f'{i+1}')
+        store_embed.add_field(name = f'{j}: {aquarium["name"]}', value = f'This tank fits {aquarium["size"]} fish and goes for {aquarium["price"]} pearles! :bubbles:', inline=False)
+        j=j+1
+    store_embed.add_field(name=f"{j}: Seasonings", value="Increase your prep bonus by 6! 50 servings for 200 pearles.")
+    j=j+1
+    store_embed.add_field(name=f"{j}: Gas Stove", value="Boosts your food quality by 1 at the price of 500 pearles!")
+    await ctx.response.send_message(embed=store_embed, view=mkVw())
