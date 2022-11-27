@@ -185,7 +185,7 @@ class mkVw(ui.View):
 
 #Your main store embed
 async def mrkt(self, ctx: discord.Interaction, button: ui.button):
-        market_embed = discord.Embed (title = "The Net, for fish", type = 'rich')
+        shop_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
         page = ""
         for i in range(10):
             marketSlot = random.randint(0,99999)
@@ -195,6 +195,5 @@ async def mrkt(self, ctx: discord.Interaction, button: ui.button):
                 marketFish = market.get(f"slot{marketSlot}")
             prep = "prepared" if (marketFish.get("prepBonus") > 0) else "Not prepared"
             page += f'**Slot**: {marketSlot}, Origin: {marketFish.get("from")}, Quality: {await qualify(marketFish.get("quality"))}, Type: {rarityAr[marketFish.get("rarity")-1]}. {prep}. \n'
-        market_embed.add_field(name="The one stop shop for bass and cod! (and other things maybe)", value = f'{page}', inline = False)
-        market_embed.set_thumbnail(url="https://i.etsystatic.com/15020412/r/il/455abc/2328156575/il_1588xN.2328156575_4m7l.jpg")
-        await ctx.response.send_message(embed=market_embed, view=mkVw())
+        shop_embed.add_field(name="Item", value = f'{page}', inline = False)
+        await ctx.response.send_message(embed=shop_embed, view=mkVw())
