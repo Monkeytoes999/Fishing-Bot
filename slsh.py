@@ -103,6 +103,8 @@ async def rarity(userLoc, loc, rc):
     res = -1
     depth = await locDepth(loc)
     rarity = random.uniform(rc, 1)
+    print(userLoc)
+    print(userLoc == 0)
     if (userLoc == 0):
         print(rarity)
         if (rarity <= .75):
