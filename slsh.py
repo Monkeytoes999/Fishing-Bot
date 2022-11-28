@@ -507,9 +507,9 @@ async def inventory(ctx: discord.Interaction):
         type="rich",
         description=f"You have {len(fi)} total fish{evf}\n/storage for a more detailed list of fish"
     )
-    in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == cfArS[0]])}\nPike: {len([f for f in wf if f == cfArS[1]])}\nGrunt: {len([f for f in wf if f == cfArS[2]])}\nAngelfish: {len([f for f in wf if f == cfArS[3]])}\nGuppy: {len([f for f in wf if f == cfArS[4]])}")
-    in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == ufArS[0]])}\nMarlin: {len([f for f in wf if f == ufArS[1]])}\nTang: {len([f for f in wf if f == ufArS[2]])}\nMudfish: {len([f for f in wf if f == ufArS[3]])}\nTrout: {len([f for f in wf if f == ufArS[4]])}")
-    in_embed.add_field(name=f"Rare Fish: {rf}", value=f"Snapper: {len([f for f in wf if f == rfArS[0]])}\nTetra: {len([f for f in wf if f == rfArS[1]])}\nFirefish: {len([f for f in wf if f == rfArS[2]])}\nParrotfish: {len([f for f in wf if f == rfArS[3]])}\nCatfish: {len([f for f in wf if f == rfArS[4]])}")
+    in_embed.add_field(name=f"Common Fish: {cf}", value=f"Bass: {len([f for f in wf if f == cfArS[0]])}\nPike: {len([f for f in wf if f == cfArS[1]])}\nGrunt: {len([f for f in wf if f == cfArS[2]])}\nAngelfish: {len([f for f in wf if f == cfArS[3]])}\nGuppy: {len([f for f in wf if f == cfArS[4]])}\nAnchovy: {len([f for f in wf if f == cfArS[4]])}")
+    in_embed.add_field(name=f"Common't Fish: {ctf}", value=f"Cod: {len([f for f in wf if f == ufArS[0]])}\nMarlin: {len([f for f in wf if f == ufArS[1]])}\nTang: {len([f for f in wf if f == ufArS[2]])}\nMudfish: {len([f for f in wf if f == ufArS[3]])}\nTrout: {len([f for f in wf if f == ufArS[4]])}\nEel: {len([f for f in wf if f == ufArS[5]])}")
+    in_embed.add_field(name=f"Rare Fish: {rf}", value=f"Snapper: {len([f for f in wf if f == rfArS[0]])}\nTetra: {len([f for f in wf if f == rfArS[1]])}\nFirefish: {len([f for f in wf if f == rfArS[2]])}\nParrotfish: {len([f for f in wf if f == rfArS[3]])}\nCatfish: {len([f for f in wf if f == rfArS[4]])}\nFallfish: {len([f for f in wf if f == rfArS[5]])}")
     in_embed.add_field(name=f"Equipment", value=f"Your fishing boat is a {bt}, and you are fishing with a {rd}!")
     await ctx.response.send_message(embed=in_embed)
 
