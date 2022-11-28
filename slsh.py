@@ -269,9 +269,9 @@ async def log(ctx: discord.Interaction):
         type="rich",
         description=f"Here are your all time fish counts!"
     )
-    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishNames[cfArS[0]-1]])}\nPike: {(fdx[fishNames[cfArS[1]-1]])}\nGrunt: {(fdx[fishNames[cfArS[2]-1]])}\nAngelfish: {(fdx[fishNames[cfArS[3]-1]])}\nGuppy: {(fdx[fishNames[cfArS[4]-1]])}")
-    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishNames[ufArS[0]-1]])}\nMarlin: {(fdx[fishNames[ufArS[1]-1]])}\nTang: {(fdx[fishNames[ufArS[2]-1]])}\nMudfish: {(fdx[fishNames[ufArS[3]-1]])}\nTrout: {(fdx[fishNames[ufArS[4]-1]])}")
-    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishNames[rfArS[0]-1]])}\nTetra: {(fdx[fishNames[rfArS[1]-1]])}\nFirefish: {(fdx[fishNames[rfArS[2]-1]])}\nParrotfish: {(fdx[fishNames[rfArS[3]-1]])}\nCatfish: {(fdx[fishNames[rfArS[4]-1]])}")
+    fd_embed.add_field(name=f"Common Fish:", value=f"Bass: {(fdx[fishNames[cfArS[0]-1]])}\nPike: {(fdx[fishNames[cfArS[1]-1]])}\nGrunt: {(fdx[fishNames[cfArS[2]-1]])}\nAngelfish: {(fdx[fishNames[cfArS[3]-1]])}\nGuppy: {(fdx[fishNames[cfArS[4]-1]])}\nAnchovy: {(fdx[fishNames[cfArS[5]-1]])}")
+    fd_embed.add_field(name=f"Common't Fish:", value=f"Cod: {(fdx[fishNames[ufArS[0]-1]])}\nMarlin: {(fdx[fishNames[ufArS[1]-1]])}\nTang: {(fdx[fishNames[ufArS[2]-1]])}\nMudfish: {(fdx[fishNames[ufArS[3]-1]])}\nTrout: {(fdx[fishNames[ufArS[4]-1]])}\nEel: {(fdx[fishNames[ufArS[5]-1]])}")
+    fd_embed.add_field(name=f"Rare Fish:", value=f"Snapper: {(fdx[fishNames[rfArS[0]-1]])}\nTetra: {(fdx[fishNames[rfArS[1]-1]])}\nFirefish: {(fdx[fishNames[rfArS[2]-1]])}\nParrotfish: {(fdx[fishNames[rfArS[3]-1]])}\nCatfish: {(fdx[fishNames[rfArS[4]-1]])}\nFallfish: {(fdx[fishNames[rfArS[5]-1]])}")
     await ctx.response.send_message(embed=fd_embed)
 
 
