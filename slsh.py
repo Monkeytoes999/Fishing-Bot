@@ -223,6 +223,9 @@ async def on_interaction(ctx):
         await createUser(ctx.user.id)
         await ctx.response.send_message(f'{ctx.user.display_name}, you now have a bot profile.')
 
+@bot.tree.command(description="Displays information about the bot")
+async def help(ctx: discord.Interaction):
+    await ctx.response.send_message("Hey there! Fish bot is a semi-idle simulation experience in which you can fish, explore, and expand your skills to become a better fisherman. \n\nWe're currently under active development, and as such the commands available may vary from day-to-day, so for now please rely on the descriptions given by each individual command to determine how they function. \n\nIf you encounter any errors while using the bot, please let us know in our support server - https://discord.com/invite/YtpyMFAtZU. Thanks for using the bot!")
 
 @bot.tree.command(description="Shows your bot profile")
 async def profile(ctx: discord.Interaction):
