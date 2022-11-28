@@ -388,7 +388,7 @@ async def fish(ctx: discord.Interaction):
         loc = explore(ctx.user.id)
         if numCaught == 0:
             numCaught = random.randint(0,1)
-        numCaught = numCaught + math.round(random.triangular(0, users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"]))
+        numCaught = numCaught + round(random.triangular(0, users[f'{ctx.user.id}']["equipment"]['fishEq']["ef"], users[f'{ctx.user.id}']["equipment"]['fishEq']["efc"]))
         r = 0
         q = 0
         fdex = users[f'{ctx.user.id}']['fishlog']
