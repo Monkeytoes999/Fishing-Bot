@@ -1,32 +1,47 @@
 {
+    "0": {
+        "name": "Soy Sauce",
+        "description": "Can cover up poorly cooked fish. It also covers up well cooked fish.",
+        "cost": 200,
+        "multiplyer": 1,
+        "boost": 2,
+        "reputation": 1,
+        "hide": 0.5
+    },
     "1": {
         "name": "Pepper",
-        "description": "Makes food taste better.",
-        "cost": 100
+        "description": "Makes food taste better. (Better tasting food sells for more)",
+        "cost": 400,
+        "multiplyer": 1,
+        "boost": 5,
+        "reputation": 1,
+        "hide": 1
     },
     "2": {
         "name": "Salt",
-        "description": "A seasoning from the gods.",
-        "cost": 100
+        "description": "A seasoning from the gods. It really brings out the flavors.",
+        "cost": 400,
+        "multiplyer": 1.1,
+        "boost": 3,
+        "reputation": 1,
+        "hide": 1
     },
     "3": {
-        "name": "Garlic Salt",
-        "description": "Ecstacy in every bite.",
-        "cost": 100
+        "name": "Chives",
+        "description": "For those that like the color green. People will think you are a fancy chef.",
+        "cost": 600,
+        "multiplyer": 1,
+        "boost": 4,
+        "reputation": 1.5,
+        "hide": 1
     },
     "4": {
-        "name": "Chives",
-        "description": "For those that like the color green.",
-        "cost": 100
-    },
-    "5": {
         "name": "Breadcrumbs",
-        "description": "Ooh. Crunchy",
-        "cost": 100
-    },
-    "6": {
-        "name": "Soy Sauce",
-        "description": "Can cover up poorly cooked fish.",
-        "cost": 100
+        "description": "Ooh. Crunchy. Easy to use.",
+        "cost": 700,
+        "multiplyer": 1,
+        "boost": 10,
+        "reputation": 0.75,
+        "hide": 0.75
     }
 }

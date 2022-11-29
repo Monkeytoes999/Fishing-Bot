@@ -1,27 +1,47 @@
 {
-    "1": {
+    "0": {
         "name": "Microwave",
         "description": "Would you rather keep feeding people raw fish?",
-        "cost": 100
+        "cost": 100,
+        "require": [],
+        "season": 1,
+        "multiplyer": 1.1,
+        "boost": 1
     },
-    "2": {
+    "1": {
         "name": "Stovetop",
         "description": "Used for sauteing fish and impressing French people.",
-        "cost": 500
+        "cost": 600,
+        "require": [],
+        "season": 1.25,
+        "multiplyer": 1.2,
+        "boost": 2
     },
-    "3": {
+    "2": {
         "name": "Oven",
         "description": "Used for baking, broiling fish, or holding down papers.",
-        "cost": 700
+        "cost": 1500,
+        "require": [],
+        "season": 1,
+        "multiplyer": 1.5,
+        "boost": 3
     },
-    "4": {
+    "3": {
         "name": "Deep Fryer",
         "description": "When regular frying isn't enough, fry it deep. Breadcrumbs required.",
-        "cost": 1000
+        "cost": 3000,
+        "require": ["Breadcrumbs"],
+        "season": 0.75,
+        "multiplyer": 1.3,
+        "boost": 5
     },
-    "5": {
+    "4": {
         "name": "Grill",
         "description": "Used for grilling the fish. Obviously.",
-        "cost": 1500
+        "cost": 3000,
+        "require": [],
+        "season": 2,
+        "multiplyer": 1.4,
+        "boost": 4
     }
 }

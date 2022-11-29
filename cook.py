@@ -110,6 +110,7 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
         await ctx.response.send_message('This fish has already been prepared!')
 
 # Cook
+# CHANGE TO SELL
 async def cook(ctx: discord.Interaction, slot:int=1):
     if (slot <= len(users[f'{ctx.user.id}']['inv'])):
         fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
@@ -190,7 +191,7 @@ class csVw(ui.View):
 # Store Embed
 async def chef(self, ctx: discord.Interaction, button: ui.button):
     chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
-    for i in range(1, len(cooking)):
+    for i in range(0, len(cooking)):
         name = cooking[f'{i}']["name"]
         page = cooking[f'{i}']["description"]
         chef_embed.add_field(name=f'{name}', value = f'{page}', inline = False)
