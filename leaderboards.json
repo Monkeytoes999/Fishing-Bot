@@ -1,18 +1,1 @@
-{
-    "bass": {"from": 0, "rarity": 1, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "pike": {"from": 0, "rarity": 2, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "grunt": {"from": 0, "rarity": 3, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "cod": {"from": 0, "rarity": 4, "quality": 0.8144095368416742, "prepBonus": 0, "weight": 0},
-    "marlin": {"from": 0, "rarity": 5, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "tang": {"from": 0, "rarity": 6, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "snapper": {"from": 0, "rarity": 7, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "tetra": {"from": 0, "rarity": 8, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "firefish": {"from": 0, "rarity": 9, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "bonefish": {"from": 0, "rarity": 10, "quality": 0.517312769942984, "prepBonus": 0, "weight": 7},
-    "angelfish": {"from": 0, "rarity": 11, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "guppy": {"from": 0, "rarity": 12, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "mudfish": {"from": 0, "rarity": 13, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "trout": {"from": 0, "rarity": 14, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "parrotfish": {"from": 0, "rarity": 15, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0},
-    "catfish": {"from": 0, "rarity": 16, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}
-}
+{"bass": {"from": 0, "rarity": 1, "quality": 0.730004376556843, "prepBonus": 0, "weight": 22.5744}, "pike": {"from": 0, "rarity": 2, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "grunt": {"from": 0, "rarity": 3, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "cod": {"from": 0, "rarity": 4, "quality": 0.013046450158354816, "prepBonus": 0, "weight": 30.561485823440474}, "marlin": {"from": 0, "rarity": 5, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "tang": {"from": 0, "rarity": 6, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "snapper": {"from": 0, "rarity": 7, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "tetra": {"from": 0, "rarity": 8, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "firefish": {"from": 0, "rarity": 9, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "bonefish": {"from": 0, "rarity": 10, "quality": 0.517312769942984, "prepBonus": 0, "weight": 7}, "angelfish": {"from": 0, "rarity": 11, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "guppy": {"from": 0, "rarity": 12, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "mudfish": {"from": 0, "rarity": 13, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "trout": {"from": 0, "rarity": 14, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "parrotfish": {"from": 0, "rarity": 15, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}, "catfish": {"from": 0, "rarity": 16, "quality": 0.517312769942984, "prepBonus": 0, "weight": 0}}

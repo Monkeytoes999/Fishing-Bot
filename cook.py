@@ -77,8 +77,8 @@ async def getRarityLevel(rarity):
         out = 4
     return out
 
-# Prepare
-async def prepare(ctx: discord.Interaction, slot:int=1):
+# cook
+async def cook(ctx: discord.Interaction, slot:int=1):
     if (slot > len(users.get(f'{ctx.user.id}').get('inv'))):
         await ctx.response.send_message('Invalid inventory slot')
     elif (users[f'{ctx.user.id}']['inv'][f'{slot-1}']['prepBonus'] == 0):
@@ -109,9 +109,8 @@ async def prepare(ctx: discord.Interaction, slot:int=1):
     else:
         await ctx.response.send_message('This fish has already been prepared!')
 
-# Cook
-# CHANGE TO SELL
-async def cook(ctx: discord.Interaction, slot:int=1):
+# sell
+async def sell(ctx: discord.Interaction, slot:int=1):
     if (slot <= len(users[f'{ctx.user.id}']['inv'])):
         fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
         q = fish['quality']
@@ -147,36 +146,30 @@ async def cook(ctx: discord.Interaction, slot:int=1):
 
 
 #What happens when the user clicks on the button (on_submit is what happens when they submit the popup)
-class FModal(ui.Modal, title='Market Purchase'):
-    slot = ui.TextInput(label="Market Slot Number")
+class FModal(ui.Modal, title='Buy Cooking Equipment'):
+    slot = ui.TextInput(label="Equipment Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
         try:
-            slot = int(f'{self.slot}')
-            if (slot >= 0 and slot <= 99999):
-                marketFish = market.get(f'slot{slot}')
-                q = marketFish["quality"]
-                r = marketFish["rarity"]
-                f = marketFish["from"] != users[f'{ctx.user.id}']["pos"]
-                if (f):
-                    p = marketFish["prepBonus"]
-                    cost = await value(r,q,False,p)
-                    if (users[f'{ctx.user.id}']["money"] >= cost):
-                        users[f'{ctx.user.id}']["money"] -= cost
-                        moneys = users[f'{ctx.user.id}']["money"]
-                        userInv = users[f'{ctx.user.id}']['inv'] 
-                        users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
-                        market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'])
-                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
-                        with open('users.json', 'w') as outfile:
-                            json.dump(users, outfile)
-                        with open('market.json', 'w') as outfile:
-                            json.dump(market, outfile)
-                    else:
-                        await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
-                else:
-                    await ctx.response.send_message(f"{ctx.user.display_name}, this was originally your fish! You can't purchase it again.")
+            slot = int(f'{self.slot}') - 1
+            name = cooking[f'{slot}']["name"]
+            try:
+                if users[f'{ctx.user.id}']["equipment"]["cooking"][f'{slot}']:
+                    await ctx.response.send_message(f"Silly {ctx.user.display_name}, you already own the {name}.")
+                    return
+            except:
+                imastupidbuttface = "Truee"
+            cost = cooking[f'{slot}']["cost"]
+            if (users[f'{ctx.user.id}']["money"] >= cost):
+                users[f'{ctx.user.id}']["money"] -= cost
+                moneys = users[f'{ctx.user.id}']["money"]
+                await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} perles! You now have {moneys} perles. :label:")
+                users[f'{ctx.user.id}']["equipment"]["cooking"][f'{slot}'] = True
+                with open('users.json', 'w') as outfile:
+                    json.dump(users, outfile)
+                with open('market.json', 'w') as outfile:
+                    json.dump(market, outfile)
             else:
-                await ctx.response.send_message("This is not a valid slot.")
+                await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
         except:
             await ctx.response.send_message("This is not a valid slot.")
 
@@ -188,11 +181,11 @@ class csVw(ui.View):
     async def mktP(self, ctx: discord.Interaction, button: ui.button):
         await ctx.response.send_modal(FModal())
 
-# Store Embed
+# Chef Shop Embed
 async def chef(self, ctx: discord.Interaction, button: ui.button):
     chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
     for i in range(0, len(cooking)):
-        name = cooking[f'{i}']["name"]
+        name = f'{i + 1}' + ": " + cooking[f'{i}']["name"]
         page = cooking[f'{i}']["description"]
         chef_embed.add_field(name=f'{name}', value = f'{page}', inline = False)
     await ctx.response.send_message(embed=chef_embed, view=csVw())

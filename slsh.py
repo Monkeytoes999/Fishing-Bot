@@ -468,9 +468,9 @@ async def trade(ctx: discord.Interaction, slot:int):
         else:
             await ctx.response.send_message('You can\'t send this fish back!')
 
-@bot.tree.command(description="Prepare your fish with seasonings or with accumulated skill")
-async def prepare(ctx: discord.Interaction, slot:int=1):
-    await cookF.prepare(ctx, slot)
+@bot.tree.command(description="Cook a fish. Requires equipment.")
+async def cook(ctx: discord.Interaction, slot:int=1):
+    await cookF.cook(ctx, slot)
 
 @bot.tree.command(guild=discord.Object(901489176384507914), description="Developer Command")
 async def special(ctx: discord.Interaction, name:str, num:int):
@@ -593,8 +593,8 @@ async def satisfaction(r, q, p):
         r = 4
     return r+3*q+random.randint(0,2)+p*2
 
-@bot.tree.command(description="Cook a fish from your inventory")
-async def cook(ctx: discord.Interaction, slot:int=1):
+@bot.tree.command(description="Sell a fish from your inventory")
+async def sell(ctx: discord.Interaction, slot:int=1):
     if (slot <= len(users[f'{ctx.user.id}']['inv'])):
         fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
         q = fish['quality']
