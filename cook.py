@@ -8,7 +8,6 @@ import json
 import time
 import math
 import png
-import slsh
 
 # Get user data
 cookFile = open('cooking.json')
@@ -139,7 +138,9 @@ class FModal(ui.Modal, title='Buy Cooking Equipment'):
     slot = ui.TextInput(label="Equipment Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
         try:
-            users = await slsh.getUserData()
+            ctx.extras["cook"] = "True"
+            file = open('users.json')
+            users = json.load(file)
             slot = int(f'{self.slot}') - 1
             name = cooking[f'{slot}']["name"]
             try:
@@ -152,9 +153,10 @@ class FModal(ui.Modal, title='Buy Cooking Equipment'):
             if (users[f'{ctx.user.id}']["money"] >= cost):
                 users[f'{ctx.user.id}']["money"] -= cost
                 moneys = users[f'{ctx.user.id}']["money"]
-                await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} perles! You now have {moneys} perles. :label:")
                 users[f'{ctx.user.id}']["equipment"]["cooking"][f'{slot}'] = True
-                await slsh.syncUserData(users)
+                with open('users.json', 'w') as outfile:
+                    json.dump(users, outfile)
+                await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} perles! You now have {moneys} perles. :label:")
             else:
                 await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
         except:
@@ -169,7 +171,7 @@ class csVw(ui.View):
         await ctx.response.send_modal(FModal())
 
 # Chef Shop Embed
-async def chef(self, ctx: discord.Interaction, users, button: ui.button):
+async def chef(self, ctx: discord.Interaction, button: ui.button):
     chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
     for i in range(0, len(cooking)):
         name = f'{i + 1}' + ": " + cooking[f'{i}']["name"]
