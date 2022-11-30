@@ -862,15 +862,15 @@ class EModal(ui.Modal, title="Equipment Purchase"):
             slot = int(f'{self.slot}')
             if (slot < len(eqCost)+1):
                 cost = eqCost[slot-1]
+                userEq = users[f'{ctx.user.id}']['equipment']
+                fishEq = equipment.get("fishEq")
+                rods = fishEq.get("fishRods")
+                boats = fishEq.get("boats")
+                aquariums = equipment.get("aquariums")
                 if (users[f'{ctx.user.id}']["money"] >= cost):
                     await ctx.channel.send('As the bot is still in early development, these items are likely to be reverted as we work on balance')
                     users[f'{ctx.user.id}']["money"] -= cost
                     moneys = users[f'{ctx.user.id}']["money"]
-                    userEq = users[f'{ctx.user.id}']['equipment']
-                    fishEq = equipment.get("fishEq")
-                    rods = fishEq.get("fishRods")
-                    boats = fishEq.get("boats")
-                    aquariums = equipment.get("aquariums")
                     if (slot > 6):
                         if (userEq.get("aquarium") != None):
                             if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
