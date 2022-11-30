@@ -880,7 +880,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                                 tempAq = aquariums[f'{slot-6}']
                                 if (users[f'{ctx.user.id}']["aquariums"]["owned"][tempAq["name"]]):
                                     users[f'{ctx.user.id}']["money"] += cost
-                                    await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
+                                    await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this tank!")
                                 else:
                                     tempAq = aquariums[f'{slot-6}']
                                     tempAq["contents"] = userEq["aquarium"]["contents"]
@@ -893,7 +893,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                         if (users[f'{ctx.user.id}']["owned"]["boats"][boats[f'{slot-3}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
                             userEq['boat'] = boats[f'{slot-3}']
-                            await ctx.response.send_message(f"{ctx.user.display_name}, you already have that!")
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this boat!")
                         else:
                             userEq['boat'] = boats[f'{slot-3}']
                     else: 
