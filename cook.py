@@ -93,7 +93,7 @@ async def cook(ctx: discord.Interaction, users, slot:int=1):
         #    sS = f'\nYou used some basic seasoning, you have enough left for {sLeft} servings.'
         users[f'{ctx.user.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
         nVal = await value(r,q,f,(p+skill))
-        await ctx.response.send_message(f'{ctx.user.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
+        await ctx.response.send_message(f'{ctx.user.display_name}, you were able to increase the value of this fish by {nVal-oVal} pearles! It is now worth {nVal} pearles! :cook:{sS}')
         return users
     else:
         await ctx.response.send_message('This fish has already been prepared!')
@@ -127,7 +127,7 @@ async def sell(ctx: discord.Interaction, users, slot:int=1):
                 j += 1
             i += 1
         users[f'{ctx.user.id}']['inv'] = newInv
-        await ctx.response.send_message(f'{om}\nYou have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
+        await ctx.response.send_message(f'{om}\nYou have sold your fish for {await value(r,q,f,p)} pearles. You now have {moneys} pearles!')
         return users
     else:
         await ctx.response.send_message('Invalid inventory slot')
@@ -156,9 +156,9 @@ class FModal(ui.Modal, title='Buy Cooking Equipment'):
                 users[f'{ctx.user.id}']["equipment"]["cooking"][f'{slot}'] = True
                 with open('users.json', 'w') as outfile:
                     json.dump(users, outfile)
-                await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} perles! You now have {moneys} perles. :label:")
+                await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} pearles! You now have {moneys} pearles. :label:")
             else:
-                await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
+                await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
         except:
             await ctx.response.send_message("This is not a valid slot.")
 

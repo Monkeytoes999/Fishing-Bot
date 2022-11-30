@@ -241,7 +241,7 @@ async def license(ctx: discord.Interaction):
     # if uLic < 2:
     #     fLCount = [50, 1000]
     #     fLPrice = [100, 5000]
-    #     nxL = f"You need to catch a total of {fLCount[uLic]} fish and pay a fee of {fLPrice[uLic]} perles to upgrade your license. If you are ready to upgrade your license, run \"/buy license\""
+    #     nxL = f"You need to catch a total of {fLCount[uLic]} fish and pay a fee of {fLPrice[uLic]} pearles to upgrade your license. If you are ready to upgrade your license, run \"/buy license\""
     # await ctx.response.send_message(f"You currently have a class {uLic} license, and have caught a total of {uFTot} fish. {nxL}")
     await ctx.response.send_message(f"Licenses are currently being reworked.")
 
@@ -360,11 +360,11 @@ async def fish(ctx: discord.Interaction):
                 totVal += await value(r,q,False,0)
         users[f'{ctx.user.id}']['fishlog'] = fdex
         users[f'{ctx.user.id}']["isFishing"] = 0
-        outMsg = f'{ctx.user.display_name}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} perles! :fishing_pole_and_fish:'
+        outMsg = f'{ctx.user.display_name}, your fishing trip yielded {numCaught} fish! Their total value is {totVal} pearles! :fishing_pole_and_fish:'
         if numCaught <= 0:
             outMsg = f'{ctx.user.display_name}, your line snapped before you could catch any fish! Unlucky!'
         elif numCaught == 1:
-            outMsg = f'{ctx.user.display_name}, you caught a {rarityAr[r-1]}! It weighs {round(w,2)} lbs and is worth {totVal} perles! :fishing_pole_and_fish:'
+            outMsg = f'{ctx.user.display_name}, you caught a {rarityAr[r-1]}! It weighs {round(w,2)} lbs and is worth {totVal} pearles! :fishing_pole_and_fish:'
         await ctx.response.send_message(outMsg)
     elif (userInfo["lastCd"] < userInfo["lastFish"] - time.time()):
         await ctx.response.send_message(f'{ctx.user.display_name}, you\'re still fishing! Come back in {round(userInfo["lastFish"] - time.time() - userInfo["lastCd"])} seconds!')
@@ -399,7 +399,7 @@ async def trade(ctx: discord.Interaction, slot:int):
             userInfo['inv'][f'{slot}'] = marketFish
             q = marketFish.get("quality")
             r = marketFish.get("rarity")
-            await ctx.response.send_message(f'{ctx.user.display_name}, your new fish is a {rarityAr[r-1]} and is in {await qualify(q)} condition. It is worth {await value(r,q,True,0)} perles! :fish:')
+            await ctx.response.send_message(f'{ctx.user.display_name}, your new fish is a {rarityAr[r-1]} and is in {await qualify(q)} condition. It is worth {await value(r,q,True,0)} pearles! :fish:')
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
             with open('market.json', 'w') as outfile:
@@ -520,7 +520,7 @@ async def checkfish(ctx: discord.Interaction, slot: int):
         f = fish.get("from") != users[f'{ctx.user.id}']["pos"]
         p = fish["prepBonus"]
         prp = " not" if (p == 0) else ""
-        await ctx.response.send_message(f'{ctx.user.display_name}, the fish in slot {slot} is a {rarityAr[r-1]} that is worth {await value(r,q,f,p)} perles and has{prp} been prepared.')
+        await ctx.response.send_message(f'{ctx.user.display_name}, the fish in slot {slot} is a {rarityAr[r-1]} that is worth {await value(r,q,f,p)} pearles and has{prp} been prepared.')
     else:
         await ctx.response.send_message('Invalid inventory slot')
 
@@ -777,7 +777,7 @@ class stVw(ui.View):
         #         if userInfo["money"] >= fLPrice[uLic]:
         #            await ctx.response.send_message(f"You're about to upgrade your license to tier {uLic + 1}. This will cost {fLPrice[uLic]} pearles. Do you want to continue?", view=lsVw(), ephemeral=True)
         #         else:
-        #             await ctx.response.send_message(f"{ctx.user.display_name}, you need to more perles before you can upgrade your license!")
+        #             await ctx.response.send_message(f"{ctx.user.display_name}, you need to more pearles before you can upgrade your license!")
         #     else:
         #         await ctx.response.send_message(f"{ctx.user.display_name}, you need to catch more fish before you can upgrade your license!")
         # else:
@@ -815,7 +815,7 @@ class lsVw(ui.View):
         if (moneys >= fLPrice[uLic]):
             users[f'{ctx.user.id}']['license'] = uLic+1
             users[f'{ctx.user.id}']['money'] = moneys - fLPrice[uLic]
-            await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys - fLPrice[uLic]} perles. :card_index:")
+            await ctx.response.send_message(f"{ctx.user.display_name} you upgraded your license to class {uLic+1}! You now have {moneys - fLPrice[uLic]} pearles. :card_index:")
             with open('users.json', 'w') as outfile:
                 json.dump(users, outfile)
         else:
@@ -840,13 +840,13 @@ class FModal(ui.Modal, title='Market Purchase'):
                         userInv = users[f'{ctx.user.id}']['inv'] 
                         users[f'{ctx.user.id}']["inv"][f'{len(userInv)}'] = marketFish
                         market[f'slot{slot}'] = await pullFish(users[f'{ctx.user.id}']['pos'], [0,0], users[f'{ctx.user.id}']['location'], ctx.user.id)
-                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} perles! You now have {moneys} perles. :label:")
+                        await ctx.response.send_message(f"{ctx.user.display_name} you bought the fish for {cost} pearles! You now have {moneys} pearles. :label:")
                         with open('users.json', 'w') as outfile:
                             json.dump(users, outfile)
                         with open('market.json', 'w') as outfile:
                             json.dump(market, outfile)
                     else:
-                        await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
+                        await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
                 else:
                     await ctx.response.send_message(f"{ctx.user.display_name}, this was originally your fish! You can't purchase it again.")
             else:
@@ -881,34 +881,60 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                                 if (users[f'{ctx.user.id}']["aquariums"]["owned"][tempAq["name"]]):
                                     users[f'{ctx.user.id}']["money"] += cost
                                     await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this tank!")
-                                else:
-                                    tempAq = aquariums[f'{slot-6}']
-                                    tempAq["contents"] = userEq["aquarium"]["contents"]
-                                    tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
-                                    tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
-                                    userEq['aquarium'] = tempAq
+                                tempAq = aquariums[f'{slot-6}']
+                                tempAq["contents"] = userEq["aquarium"]["contents"]
+                                tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
+                                tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
+                                userEq['aquarium'] = tempAq
                         else:
                             userEq['aquarium'] = aquariums[f'{slot-6}']
                     elif (slot > 3):
                         if (users[f'{ctx.user.id}']["owned"]["boats"][boats[f'{slot-3}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
-                            userEq['boat'] = boats[f'{slot-3}']
                             await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this boat!")
-                        else:
-                            userEq['boat'] = boats[f'{slot-3}']
+                        userEq['boat'] = boats[f'{slot-3}']
                     else: 
                         if (users[f'{ctx.user.id}']["owned"]["fishEq"][rods[f'{slot}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
-                            userEq['fishEq'] = rods[f'{slot}']
                             await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this rod!")
-                        else:
-                            userEq['fishEq'] = rods[f'{slot}']
+                        userEq['fishEq'] = rods[f'{slot}']
                     users[f'{ctx.user.id}']['equipment'] = userEq
-                    await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} perles! You now have {moneys} perles. :label:")
+                    await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} pearles! You now have {moneys} pearles. :label:")
                     with open('users.json', 'w') as outfile:
                         json.dump(users, outfile)
                 else:
-                    await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")   
+                    if (slot > 6):
+                        if (userEq.get("aquarium") != None):
+                            if (len(userEq["aquarium"]["contents"]) > aquariums[f'{slot-6}']["size"]):
+                                await ctx.response.send_message(f"{ctx.user.display_name} your current aquarium has too many fish in it to downgrade!")      
+                            else:
+                                tempAq = aquariums[f'{slot-6}']
+                                if (users[f'{ctx.user.id}']["aquariums"]["owned"][tempAq["name"]]):
+                                    await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this tank!")
+                                    tempAq = aquariums[f'{slot-6}']
+                                    tempAq["contents"] = userEq["aquarium"]["contents"]
+                                    tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
+                                    tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
+                                    userEq['aquarium'] = tempAq
+                                else:
+                                    await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
+                        else:
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
+                    elif (slot > 3):
+                        if (users[f'{ctx.user.id}']["owned"]["boats"][boats[f'{slot-3}']["name"]]):
+                            userEq['boat'] = boats[f'{slot-3}']
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this boat!")
+                        else:
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
+                    else: 
+                        if (users[f'{ctx.user.id}']["owned"]["fishEq"][rods[f'{slot}']["name"]]):
+                            userEq['fishEq'] = rods[f'{slot}']
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this rod!")
+                        else:
+                            await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough pearles to make this transaction! :chart_with_downwards_trend:")
+                    users[f'{ctx.user.id}']['equipment'] = userEq
+                    with open('users.json', 'w') as outfile:
+                        json.dump(users, outfile)   
             else:
                 await ctx.response.send_message("Invalid equipment slot.")
         #except:
