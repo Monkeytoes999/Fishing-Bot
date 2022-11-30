@@ -886,6 +886,7 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                                 tempAq["passiveVal"] = userEq["aquarium"]["passiveVal"]
                                 tempAq["lastChecked"] = userEq["aquarium"]["lastChecked"]
                                 userEq['aquarium'] = tempAq
+                                users[f'{ctx.user.id}']["aquariums"]["owned"][tempAq["name"]] = True
                         else:
                             userEq['aquarium'] = aquariums[f'{slot-6}']
                     elif (slot > 3):
@@ -893,11 +894,13 @@ class EModal(ui.Modal, title="Equipment Purchase"):
                             users[f'{ctx.user.id}']["money"] += cost
                             await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this boat!")
                         userEq['boat'] = boats[f'{slot-3}']
+                        users[f'{ctx.user.id}']["owned"]["boats"][boats[f'{slot-3}']["name"]] = True
                     else: 
                         if (users[f'{ctx.user.id}']["owned"]["fishEq"][rods[f'{slot}']["name"]]):
                             users[f'{ctx.user.id}']["money"] += cost
                             await ctx.response.send_message(f"{ctx.user.display_name}, you successfully switched to this rod!")
                         userEq['fishEq'] = rods[f'{slot}']
+                        users[f'{ctx.user.id}']["owned"]["fishEq"][rods[f'{slot}']["name"]] = True
                     users[f'{ctx.user.id}']['equipment'] = userEq
                     await ctx.response.send_message(f"{ctx.user.display_name} you bought the item for {cost} pearles! You now have {moneys} pearles. :label:")
                     with open('users.json', 'w') as outfile:
