@@ -8,18 +8,9 @@ import json
 import time
 import math
 import png
+import slsh
 
 # Get user data
-file = open('users.json',)
-users = json.load(file)
-mFile = open('market.json',)
-market = json.load(mFile)
-eqFile = open('equipment.json')
-equipment = json.load(eqFile)
-lcFile = open('locations.json')
-locations = json.load(lcFile)
-ldbFile = open('leaderboards.json')
-leaderboards = json.load(ldbFile)
 cookFile = open('cooking.json')
 cooking = json.load(cookFile)
 seasFile = open('seasonings.json')
@@ -78,7 +69,7 @@ async def getRarityLevel(rarity):
     return out
 
 # cook
-async def cook(ctx: discord.Interaction, slot:int=1):
+async def cook(ctx: discord.Interaction, users, slot:int=1):
     if (slot > len(users.get(f'{ctx.user.id}').get('inv'))):
         await ctx.response.send_message('Invalid inventory slot')
     elif (users[f'{ctx.user.id}']['inv'][f'{slot-1}']['prepBonus'] == 0):
@@ -104,13 +95,12 @@ async def cook(ctx: discord.Interaction, slot:int=1):
         users[f'{ctx.user.id}']['inv'][f'{slot}']['prepBonus'] += (p+skill)
         nVal = await value(r,q,f,(p+skill))
         await ctx.response.send_message(f'{ctx.user.display_name}, you were able to increase the value of this fish by {nVal-oVal} perles! It is now worth {nVal} perles! :cook:{sS}')
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
+        return users
     else:
         await ctx.response.send_message('This fish has already been prepared!')
 
 # sell
-async def sell(ctx: discord.Interaction, slot:int=1):
+async def sell(ctx: discord.Interaction, users, slot:int=1):
     if (slot <= len(users[f'{ctx.user.id}']['inv'])):
         fish = users[f'{ctx.user.id}']['inv'][f'{slot-1}']
         q = fish['quality']
@@ -139,8 +129,7 @@ async def sell(ctx: discord.Interaction, slot:int=1):
             i += 1
         users[f'{ctx.user.id}']['inv'] = newInv
         await ctx.response.send_message(f'{om}\nYou have sold your fish for {await value(r,q,f,p)} perles. You now have {moneys} perles!')
-        with open('users.json', 'w') as outfile:
-            json.dump(users, outfile)
+        return users
     else:
         await ctx.response.send_message('Invalid inventory slot')
 
@@ -150,6 +139,7 @@ class FModal(ui.Modal, title='Buy Cooking Equipment'):
     slot = ui.TextInput(label="Equipment Slot Number")
     async def on_submit(self, ctx: discord.Interaction):
         try:
+            users = await slsh.getUserData()
             slot = int(f'{self.slot}') - 1
             name = cooking[f'{slot}']["name"]
             try:
@@ -164,10 +154,7 @@ class FModal(ui.Modal, title='Buy Cooking Equipment'):
                 moneys = users[f'{ctx.user.id}']["money"]
                 await ctx.response.send_message(f"{ctx.user.display_name} you bought the {name} for {cost} perles! You now have {moneys} perles. :label:")
                 users[f'{ctx.user.id}']["equipment"]["cooking"][f'{slot}'] = True
-                with open('users.json', 'w') as outfile:
-                    json.dump(users, outfile)
-                with open('market.json', 'w') as outfile:
-                    json.dump(market, outfile)
+                await slsh.syncUserData(users)
             else:
                 await ctx.response.send_message(f"{ctx.user.display_name}, you do not have enough perles to make this transaction! :chart_with_downwards_trend:")
         except:
@@ -182,7 +169,7 @@ class csVw(ui.View):
         await ctx.response.send_modal(FModal())
 
 # Chef Shop Embed
-async def chef(self, ctx: discord.Interaction, button: ui.button):
+async def chef(self, ctx: discord.Interaction, users, button: ui.button):
     chef_embed = discord.Embed (title = "The Chef Shop", type = 'rich')
     for i in range(0, len(cooking)):
         name = f'{i + 1}' + ": " + cooking[f'{i}']["name"]
