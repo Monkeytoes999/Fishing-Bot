@@ -112,87 +112,22 @@ async def rarity(userLoc, loc, rc):
     depth = await locDepth(loc)
     rarity = random.uniform(rc, 1)
     if (userLoc == '0'):
-        if (rarity <= .75):
-            res = 1
-        elif (rarity <= .9):
-            res = 4
-        else:
-            res = 18
+        fr = [.75, .9, 20000000000000000]
+        fn = [1, 4, 18]
     elif (userLoc == '1'):
-        if (rarity <= .3):
-            res = 1
-        elif (rarity <= .55):
-            res = 11
-        elif (rarity <= .75):
-            res = 12
-        elif (rarity <= .82):
-            res = 6
-        elif (rarity <= .87):
-            res = 13
-        elif (rarity <= .9):
-            res = 14
-        elif (rarity <= .95):
-            res = 18
-        elif (rarity <= .98):
-            res = 16
-        else:
-            res = 8
+        fr = [.3, .55, .75, .82, .87, .9, .95, .98, 20000000000000000]
+        fn = [1, 11, 12, 6, 13, 14, 18, 16, 8]
     elif (userLoc == '2'):
-        if (rarity <= .3):
-            res = 1
-        elif (rarity <= .55):
-            res = 2
-        elif (rarity <= .75):
-            res = 3
-        elif (rarity <= .80):
-            res = 4
-        elif (rarity <= .84):
-            res = 6
-        elif (rarity <= .87):
-            res = 5
-        elif (rarity <= .9):
-            res = 20
-        elif (rarity <= .95):
-            res = 8
-        elif (rarity <= .98):
-            res = 7
-        else:
-            res = 9
+        fr = [.3, .55, .75, .8, .84, .87, .9, .95, .98, 20000000000000000]
+        fn = [1, 2, 3, 4, 6, 5, 20, 8, 7, 9]
     elif (userLoc == '3'):
-        if (rarity <= .22):
-            res = 1
-        elif (rarity <= .39):
-            res = 11
-        elif (rarity <= .52):
-            res = 12
-        elif (rarity <= .62):
-            res = 2
-        elif (rarity <= .69):
-            res = 3
-        elif (rarity <= .75):
-            res = 19
-        elif (rarity <= .79):
-            res = 4
-        elif (rarity <= .81):
-            res = 6
-        elif (rarity <= .83):
-            res = 13
-        elif (rarity <= .86):
-            res = 14
-        elif (rarity <= .88):
-            res = 5
-        elif (rarity <= .9):
-            res = 20
-        elif (rarity <= .93):
-            res = 16
-        elif (rarity <= .96):
-            res = 8
-        elif (rarity <= .98):
-            res = 7
-        elif (rarity <= .99):
-            res = 9
-        else:
-            res = 15
+        fr = [.22, .39, .52, .62, .69, .75, .79, .81, .83, .86, .88, .9, .93, .96, .98, .99, 20000000000000000]
+        fn = [1, 11, 12, 2, 3, 19, 4, 6, 13, 14, 5, 20, 16, 8, 7, 9, 15] 
+    i = 0
+    while (res == -1):
+        if (rarity <= fr[i]):
+            res = fn[i]
+        i += 1
     return res
         
 async def locDepth(location):
